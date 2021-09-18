@@ -45,29 +45,8 @@
           width="100">
         <template #default="scope">
           <span>{{
-              scope.row.questionnaireState == 0 ? "未发布" : scope.row.questionnaireState == 1 ? "已发布" : "已截至"
+              scope.row.questionnaireState === 0 ? "可编辑" : "已确认"
             }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-          label="提交人数"
-          width="100">
-        <template #default="scope">
-          <span>{{ scope.row.submissionNumber }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-          label="发布时间"
-          width="180">
-        <template #default="scope">
-          <span>{{ scope.row.releaseTime == null ? "未发布" : scope.row.releaseTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-          label="截至时间"
-          width="180">
-        <template #default="scope">
-          <span>{{ scope.row.deadline == null ? "未发布" : scope.row.createTime }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -76,26 +55,25 @@
           <el-button
               size="mini"
               type="primary"
-              :disabled="scope.row.state===1"
-              @click="handleAddParent(scope.$index, scope.row)">查看结果
+              :disabled="scope.row.questionnaireState!=1"
+              @click="handleRelease(scope.$index, scope.row)">发布问卷
           </el-button>
           <el-button
               size="mini"
               type="primary"
-              :disabled="scope.row.state===1"
-              @click="handleRelease(scope.$index, scope.row)">发布问卷
+              :disabled="scope.row.questionnaireState!=0"
+              @click="confirm(scope.$index, scope.row)">确认问卷
           </el-button>
           <router-link :to="{name:'questionnaireDetails',params: {id: scope.row.questionnaireId}}">
             <el-button
                 size="mini"
                 type="primary"
-                :disabled="scope.row.state===1">编辑问卷
+                :disabled="scope.row.questionnaireState!=0">编辑问卷
             </el-button>
           </router-link>
           <el-button
               size="mini"
               type="danger"
-              :disabled="scope.row.state===1"
               @click="handleDel(scope.$index, scope.row)">删除问卷
           </el-button>
         </template>
@@ -114,13 +92,53 @@
     <div>
       <el-dialog width="35%" title="发布问卷" :visible.sync="releaseFormVisible">
 
-        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" class="releaseParams" ref="releaseParams">
-            <el-form-item label="班级" prop="classes" :label-width="formLabelWidth">
-              <el-cascader
-                  v-model="selectedOptions"
-                  :options="options"
-                  @change="handleChange"></el-cascader>
-            </el-form-item>
+        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" class="releaseParams"
+                 ref="releaseParams">
+          <el-form-item label="发布类型" prop="classes" :label-width="formLabelWidth">
+            <el-select v-model="releaseParams.publishType" placeholder="请选择">
+              <el-option label="地区" :value=0></el-option>
+              <el-option label="学校" :value=1></el-option>
+              <el-option label="班级" :value=2></el-option>
+              <el-option label="学生个人" :value=3></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="班级" prop="classes" :label-width="formLabelWidth"
+                        v-if="releaseParams.publishType==2||releaseParams.publishType==3">
+            <el-cascader
+                v-model="selectedOptions"
+                :options="options"
+                @change="handleChange"></el-cascader>
+          </el-form-item>
+          <el-form-item label="地区" prop="classes" :label-width="formLabelWidth" v-if="releaseParams.publishType==0">
+            <el-select v-model="releaseParams.id" placeholder="请选择">
+              <el-option
+                  v-for="area in areas"
+                  :key="area.areaId"
+                  :label="area.areaName"
+                  :value="area.areaId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="学校" prop="classes" :label-width="formLabelWidth" v-if="releaseParams.publishType==1">
+            <el-select v-model="releaseParams.id" placeholder="请选择">
+              <el-option
+                  v-for="school in schools"
+                  :key="school.schoolId"
+                  :label="school.schoolName"
+                  :value="school.schoolId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="学生个人" prop="classes" :label-width="formLabelWidth" v-if="releaseParams.publishType==3">
+            <el-select v-model="releaseParams.id" placeholder="请选择">
+              <el-option
+                  v-for="student in students"
+                  :key="student.studentsClass.studentId"
+                  :label="student.studentName"
+                  :value="student.studentsClass.studentId">
+              </el-option>
+            </el-select>
+          </el-form-item>
           <el-form-item label="时间" prop="time" :label-width="formLabelWidth">
             <el-date-picker
                 @change="handleChangeTime"
@@ -180,18 +198,24 @@ export default {
       callback();
     };
     let validateClasses = (rule, value, callback) => {
-      if (value === '' && value ===null) {
+      if (value === '' && value === null) {
         callback(new Error('班级不能为空'))
       }
       callback();
     };
     let validateTime = (rule, value, callback) => {
-      if (value === '' && value ===null) {
+      if (value === '' && value === null) {
         callback(new Error('时间不能为空'))
       }
       callback();
     };
     return {
+      userId:192386930036805,
+      classId: null,
+      publishType: 2,
+      areas: [],
+      schools: [],
+      students: [],
       questionnaire: [],
       options: [],
       selectedOptions: [],
@@ -199,15 +223,16 @@ export default {
       releaseFormVisible: false,
       addFormVisible: false,
       formLabelWidth: "80px",
-      dataTime:["",""],
-      releaseParams:{
-        questionnaireId:null,
-        schoolId:null,
-        classId:null,
-        releaseTime:null,
-        deadLine:null,
+      dataTime: ["", ""],
+      releaseParams: {
+        questionnaireId: null,
+        userId:null,
+        publishType: 2,
+        id: null,
+        releaseTime: null,
+        deadLine: null,
       },
-      releaseParamsRules:{
+      releaseParamsRules: {
         classes: [
           {validator: validateClasses, trigger: 'blur'}
         ],
@@ -242,6 +267,12 @@ export default {
   },
   mounted() {
     this.queryQuestionnaire();
+    request.get("/area").then(res => {
+      this.areas = res.data
+    })
+    request.get("/selectSchool").then(res => {
+      this.schools = res.data
+    })
   },
   methods: {
     queryQuestionnaire() {
@@ -254,14 +285,30 @@ export default {
         this.questionnaire = data.data;
       })
     },
+    queryStudents(classId) {
+      request.get("/getStudents", {
+        "classId": classId
+      }).then(res => {
+        this.students = res.data
+      })
+    },
     querySchoolList() {
       request.get("/getSchoolList").then(res => {
         this.options = res.data;
       })
     },
     handleChange(arr) {
-      this.releaseParams.classId = arr[1];
-      this.releaseParams.schoolId=arr[0];
+      console.log(arr)
+      if (this.releaseParams.publishType == 2) {
+        this.releaseParams.id=arr[1]
+      } else {
+        this.queryStudents(arr[1])
+      }
+    },
+    confirm(index, row) {
+      request.post("/confirm", null, {"questionnaireId": row.questionnaireId}).then(res => {
+        this.queryQuestionnaire();
+      })
     },
     changePageSize(e) {
       this.queryParams.pageSize = e;
@@ -281,7 +328,7 @@ export default {
       this.$refs["questionnaires"].validate((valid) => {
         if (valid) {
           request.post("/insertQuestionnaire", null, {
-            creator: 192386930036805,
+            creator:this.userId,
             introduction: this.questionnaires.questionnaireIntroduction,
             name: this.questionnaires.questionnaireName
           }).then(res => {
@@ -310,18 +357,19 @@ export default {
         this.queryQuestionnaire();
       })
     },
-    handleRelease(index,row){
-      this.releaseFormVisible=true;
-      this.releaseParams.questionnaireId=row.questionnaireId
+    handleRelease(index, row) {
+      this.releaseFormVisible = true;
+      this.releaseParams.questionnaireId = row.questionnaireId
       this.querySchoolList();
     },
-    handleChangeTime(){
+    handleChangeTime() {
       console.log(this.dataTime)
     },
     releaseSubmit() {
-      console.log(this.dataTime)
-      this.releaseParams.releaseTime=this.dataTime[0];
-      this.releaseParams.deadLine=this.dataTime[1];
+      this.releaseParams.releaseTime = this.dataTime[0];
+      this.releaseParams.deadLine = this.dataTime[1];
+      this.releaseParams.userId=this.userId;
+      console.log(this.releaseParams)
       this.$refs["releaseParams"].validate((valid) => {
         if (valid) {
           request.post("/release", this.releaseParams).then(res => {
@@ -329,7 +377,6 @@ export default {
             this.releaseFormVisible = false;
           })
         } else {
-          console.log('error submit!!');
           return false;
         }
       });

@@ -11,12 +11,12 @@
                     :label-width="formLabelWidth"></el-input>
         </el-form-item>
         <el-form-item align="left" label="计算方式">
-          <el-select v-model="questionnaire.calculation" placeholder="请选择">
+          <el-select v-model="questionnaire.calculation" placeholder="请选择" @change="changeCalculation">
             <el-option label="因子" :value="0"></el-option>
             <el-option label="总分" :value="1"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item align="left" label="因子个数">
+        <el-form-item align="left" label="因子个数" v-if="questionnaire.calculation===0">
           <el-input-number v-model="factorNum" :min="1" :max="10" label="描述文字"></el-input-number>
         </el-form-item>
         <el-form-item align="left" label="模板">
@@ -86,7 +86,7 @@
               <el-radio :label="2">教师</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item align="left" label="因子" prop="resource">
+          <el-form-item align="left" label="因子" prop="resource" v-if="questionnaire.calculation===0">
             <el-select v-model="item.factorGroupId" placeholder="请选择因子">
               <el-option
                   v-for="factor in factors"
@@ -141,12 +141,13 @@
       </div>
       <el-button @click="addTemplate">添加题目</el-button>
     </div>
+    <div v-if="this.questionnaire.calculation === 0">
     <span>变量</span>
     <el-divider></el-divider>
     <div>
       <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaire.variables" :key="index"
                status-icon class="questionnaireForm"
-               ref="questionnaireForm" label-width="90px">
+               :ref="questionnaireForm" label-width="90px">
         <el-form-item align="left" label="变量序号">
           <span>{{ '变量' + item.id }}</span>
         </el-form-item>
@@ -166,7 +167,7 @@
 
           </el-select>
         </el-form-item>
-        <el-form-item align="left" label="因子" v-if="item.type!==4&&item.type!==3" >
+        <el-form-item align="left" label="因子" v-if="item.type!==4&&item.type!==3">
           <el-select v-model="item.factor" placeholder="请选择因子" @change="factorChange(item.factor)">
             <el-option
                 v-for="factor in factors"
@@ -219,6 +220,7 @@
       </el-form>
       <el-button @click="addVariable">添加变量</el-button>
     </div>
+    </div>
     <span>结果</span>
     <el-divider></el-divider>
     <div>
@@ -235,7 +237,7 @@
           <el-input input type="textarea" v-model="item.introduction" :label-width="formLabelWidth"></el-input>
         </el-form-item>
         <el-form-item v-for="(condition,index2) in item.conditions" :key="index2" align="left" label="条件列表">
-          <span>{{'条件' + condition.id}}</span>
+          <span>{{ '条件' + (index2+1) }}</span>
           <el-select v-model="condition.variable" placeholder="请选择变量">
             <el-option
                 v-for="variable in questionnaire.variables"
@@ -245,11 +247,10 @@
             </el-option>
           </el-select>
           <el-select v-model="condition.type" placeholder="请选择运算方式">
-            <el-option key=0 value=0 label="=" ></el-option>
-            <el-option key=1 value=1 label=">" ></el-option>
-            <el-option key=2 value=2 label="<" ></el-option>
-            <el-option key=3 value=3 label=">="></el-option>
-            <el-option key=4 value=4 label="<="></el-option>
+            <el-option v-for="item in options"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value"></el-option>
           </el-select>
           <el-input-number v-model="condition.value" :min="1" :max="100" label="值"></el-input-number>
           <el-button type="danger" @click="removeCondition(item,condition)">移除条件</el-button>
@@ -259,7 +260,7 @@
       </el-form>
       <el-button @click="addResult">添加结果</el-button>
     </div>
-    <el-button style="float:right" @click="questionnaireSubmit" >提交</el-button>
+    <el-button style="float:right" @click="questionnaireSubmit">提交</el-button>
   </div>
 </template>
 
@@ -269,9 +270,25 @@ import request from "../utils/request";
 export default {
   data() {
     return {
+      options: [{
+        value: 0,
+        label: '='
+      }, {
+        value: 1,
+        label: '>'
+      }, {
+        value: 2,
+        label: '<'
+      }, {
+        value: 3,
+        label: '>='
+      }, {
+        value: 4,
+        label: '<='
+      }],
       factorNum: 0,
-      opt:0,
-      opts:[],
+      opt: 0,
+      opts: [],
       factors: [],
       id: null,
       formLabelWidth: "20px",
@@ -294,21 +311,35 @@ export default {
   watch: {
     factorNum(val, oldVal) {
       this.factors = []
-
-      this.factors.push({value:0, label: "全部"})
       for (let i = 1; i <= val; i++) {
-        this.factors.push({value:i, label: "因子" + i})
+        this.factors.push({value: i, label: "因子" + i})
       }
     },
-    opt(val,oldVal){
-      this.opts=[]
-      for(let i=0;i<=val;i++){
-        this.opts.push({value:String.fromCharCode(i + 64),label:String.fromCharCode(i + 65)})
+    opt(val, oldVal) {
+      this.opts = []
+      for (let i = 0; i <= val; i++) {
+        this.opts.push({value: String.fromCharCode(i + 64), label: String.fromCharCode(i + 65)})
       }
       console.log(this.opts)
     }
   },
   methods: {
+    changeCalculation() {
+      if (this.questionnaire.calculation === 1) {
+        this.questionnaireForm.forEach(function (s){
+          s.factorGroupId=0;
+        })
+        this.questionnaire.variables =[
+          {
+            id: 1,
+            name: "总分",
+            introduction: "总分",
+            type: 0,
+            factor: 0
+          }
+        ]
+      }
+    },
     addTemplate() {
       if (!this.questionnaireForm) {
         this.questionnaireForm = []
@@ -378,9 +409,9 @@ export default {
         name: "",
         introduction: "",
         type: 0,
-        factor: 0,
-        option:"A",
-        constant:1,
+        factor: 1,
+        option: "A",
+        constant: 1,
         operation1: 1,
         operation: "+",
         operation2: 1
@@ -395,23 +426,23 @@ export default {
         s.id = num + 1
       })
     },
-    factorChange(f){
-      let i=0;
+    factorChange(f) {
+      let i = 0;
       this.questionnaireForm.forEach(function (s, num) {
-        if(f===0){
-          s.answerOptions.forEach(function (a,num){
-            i=num;
+        if (f === 0) {
+          s.answerOptions.forEach(function (a, num) {
+            i = num;
           })
-        }else if(s.factorGroupId===f){
-          s.answerOptions.forEach(function (a,num){
-            i=num;
+        } else if (s.factorGroupId === f) {
+          s.answerOptions.forEach(function (a, num) {
+            i = num;
           })
         }
       })
-      this.opt=i
+      this.opt = i
     },
     // ****************************************************************************结果
-    addResult(){
+    addResult() {
       if (!this.questionnaire.results) {
         this.questionnaire.results = []
       }
@@ -419,21 +450,21 @@ export default {
         id: this.questionnaire.results.length + 1,
         name: "",
         introduction: "",
-        conditions:[]
+        conditions: []
       });
     },
-    addCondition(item){
+    addCondition(item) {
       if (!item.conditions) {
         item.conditions = []
       }
       item.conditions.push({
         id: item.conditions.length + 1,
-        variable:'',
-        type:0,
-        value:0
+        variable: '',
+        type: 0,
+        value: 0
       });
     },
-    removeResult(item){
+    removeResult(item) {
       let index = this.questionnaire.results.indexOf(item)
       if (index !== -1) {
         this.questionnaire.results.splice(index, 1)
@@ -442,7 +473,7 @@ export default {
         s.id = num + 1
       })
     },
-    removeCondition(item,condition){
+    removeCondition(item, condition) {
       let index = item.conditions.indexOf(condition)
       if (index !== -1) {
         item.conditions.splice(index, 1)
@@ -451,11 +482,10 @@ export default {
         s.id = num + 1
       })
     },
-    questionnaireSubmit(){
-      request.post("/modifyQuestionnaire",this.questionnaire).then(res=>{
+    questionnaireSubmit() {
+      request.post("/modifyQuestionnaire", this.questionnaire).then(res => {
       })
-      request.post("/modifyDetails",this.questionnaireForm).then(res=>{
-        console.log(111)
+      request.post("/modifyDetails", this.questionnaireForm).then(res => {
       })
     }
   },

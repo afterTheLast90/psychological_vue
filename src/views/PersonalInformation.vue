@@ -38,7 +38,7 @@ import request from "../utils/request";
 export default {
   data() {
     return {
-      userId: 200861932433477,
+      userId: 200878151622725,
       user: [],
       formLabelWidth: "80px",
       circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
