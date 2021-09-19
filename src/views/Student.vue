@@ -5,8 +5,11 @@
       <el-col style="padding-left: 0px; padding-right: 0px" :span="2">
         <h2>学生管理</h2>
       </el-col>
-      <el-col style="padding-left: 0px; padding-right: 0px" :span="22">
+      <el-col style="padding-left: 0px; padding-right: 0px" :span="20">
         <el-button plain style="float: right;" @click="addStudent">添加学生</el-button>
+      </el-col>
+      <el-col style="padding-left: 0px; padding-right: 0px" :span="2">
+        <el-button plain style="float: right;" @click="addParent">添加家长</el-button>
       </el-col>
     </el-row>
 
@@ -99,7 +102,7 @@
               size="mini"
               type="primary"
               :disabled="scope.row.state===1"
-              @click="handleAddParent(scope.$index, scope.row)">添加家长
+              @click="handleAddParent(scope.$index, scope.row)">家长更改
           </el-button>
           <el-button
               size="mini"
@@ -112,12 +115,6 @@
               type="primary"
               :disabled="scope.row.state===1"
               @click="handleEdit(scope.$index, scope.row)">编辑学生
-          </el-button>
-          <el-button
-              size="mini"
-              type="danger"
-              :disabled="scope.row.state===1"
-              @click="handleDeleteParent(scope.$index, scope.row)">移除家长
           </el-button>
           <el-button
               size="mini"
@@ -189,6 +186,16 @@
                 :options="options"
                 @change="handleChange"></el-cascader>
           </el-form-item>
+          <el-form-item label="家长" prop="parentId" :label-width="formLabelWidth">
+            <el-select v-model="user.parentId" placeholder="请选择家长">
+              <el-option
+                  v-for="item in parent"
+                  :key="item.parentId"
+                  :label="item.parentName"
+                  :value="item.parentId">
+              </el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
@@ -258,6 +265,27 @@
       </el-dialog>
     </div>
     <div>
+      <el-dialog width="35%" title="更改家长" :visible.sync="editParentFormVisible">
+        <el-form>
+          <el-form-item label="家长" prop="name" :label-width="formLabelWidth">
+            <el-select v-model="parentId" placeholder="请选择家长">
+              <el-option
+                  v-for="item in parent"
+                  :key="item.parentId"
+                  :label="item.parentName"
+                  :value="item.parentId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="resetForm">重 置</el-button>
+          <el-button @click="formLabelWidth = false">取 消</el-button>
+          <el-button type="primary" @click="editParentSubmit">提 交</el-button>
+        </div>
+      </el-dialog>
+    </div>
+    <div>
       <el-dialog width="35%" title="退出班级" :visible.sync="delClassFormVisible">
         <el-form>
           <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
@@ -320,28 +348,7 @@
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
           <el-button @click="addParentFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addTeacherStudentSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <div>
-      <el-dialog width="35%" title="移除家长" :visible.sync="delParentFormVisible">
-        <el-form>
-          <el-form-item label="家长名称" prop="name" :label-width="formLabelWidth">
-            <el-select v-model="aParentId">
-              <el-option
-                  v-for="item in parents"
-                  :key="item.parentId"
-                  :label="item.parentName"
-                  :value="item.parentId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="delParentFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="delParentSubmit">提 交</el-button>
+          <el-button type="primary" @click="addParentStudentSubmit">提 交</el-button>
         </div>
       </el-dialog>
     </div>
@@ -355,6 +362,12 @@ export default {
     let validateName = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('用户名不能为空'))
+      }
+      callback();
+    };
+    let validateParentId = (rule, value, callback) => {
+      if (value === null) {
+        callback(new Error('家长不能为空'))
       }
       callback();
     };
@@ -406,17 +419,19 @@ export default {
       }
     };
     return {
+      parentId: null,
       students: [],
       options: [],
       selectedOptions: [],
       aClass: [],
+      parent: [],
       parents: [],
       input: "",
       aClassId: null,
       aParentId: null,
       studentId: null,
       formLabelWidth: "80px",
-      delParentFormVisible: false,
+      editParentFormVisible: false,
       addParentFormVisible: false,
       delClassFormVisible: false,
       editClassFormVisible: false,
@@ -443,9 +458,13 @@ export default {
         birthday: null,
         gender: "",
         phone_number: "",
-        classId: null
+        classId: null,
+        parentId: null
       },
       rules: {
+        parentId: [
+          {validator: validateParentId, trigger: 'blur'}
+        ],
         name: [
           {validator: validateName, trigger: 'blur'}
         ],
@@ -476,8 +495,14 @@ export default {
   mounted() {
     this.queryUsers();
     this.querySchoolList();
+    this.queryParent();
   },
   methods: {
+    queryParent() {
+      request.get("/getParent").then(res => {
+        this.parent = res.data
+      })
+    },
     queryUsers() {
       request.get("/getStudentList", this.queryParams).then(res => {
         let data = res.data;
@@ -526,6 +551,7 @@ export default {
             "userPassword": this.user.password,
             "userPhoneNumber": this.user.phone_number
           }, {
+            parentId:this.user.parentId,
             classId: this.user.classId,
           }).then(res => {
             this.queryUsers();
@@ -627,7 +653,7 @@ export default {
       this.queryParams.classId = this.user.classId;
       this.queryUsers();
     },
-    handleAddParent(index, row) {
+    addParent(index, row) {
       this.addParentFormVisible = true;
       this.user.name = "";
       this.user.account = "";
@@ -636,10 +662,14 @@ export default {
       this.user.gender = "";
       this.user.phone_number = "";
       this.user.birthday = null;
+      this.resetForm();
+    },
+    handleAddParent(index, row) {
+      this.editParentFormVisible = true;
       this.studentId = row.userId;
       this.resetForm();
     },
-    addTeacherStudentSubmit() {
+    addParentStudentSubmit() {
       this.$refs["user"].validate((valid) => {
         if (valid) {
           request.post("/addParent", {
@@ -650,10 +680,9 @@ export default {
             "userName": this.user.name,
             "userPassword": this.user.password,
             "userPhoneNumber": this.user.phone_number
-          }, {
-            studentId: this.studentId,
           }).then(res => {
             this.queryUsers();
+            this.queryParent();
             this.addParentFormVisible = false;
           })
         } else {
@@ -662,18 +691,13 @@ export default {
         }
       });
     },
-    handleDeleteParent(index, row) {
-      this.studentId = row.userId;
-      this.delParentFormVisible = true;
-      this.parents = row.parents;
-    },
-    delParentSubmit() {
-      request.post("/delParent", null, {
-        studentId: this.studentId,
-        parentId: this.aParentId
-      }).then(res => {
-        this.delParentFormVisible = false;
-        this.queryUsers();
+    editParentSubmit() {
+      request.post("/modifyParent",null,{
+        "studentId":this.studentId,
+        "parentId":this.parentId
+      }).then(res=>{
+        this.queryUsers()
+        this.editParentFormVisible=false
       })
     }
   }

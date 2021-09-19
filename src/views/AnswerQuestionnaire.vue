@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       state:null,
-      role:0,
+      role:2,
       answers: [],
       id: null,
       userId: null,

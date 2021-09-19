@@ -19,7 +19,7 @@
               <el-menu-item index="/mobile/beFilledWith">待填写问卷</el-menu-item>
             </el-col>
             <el-col :span="7">
-              <el-menu-item index="3">问卷结果</el-menu-item>
+              <el-menu-item index="/mobile/questionnaireResult">问卷结果</el-menu-item>
             </el-col>
           </el-row>
         </el-menu>

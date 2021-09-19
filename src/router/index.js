@@ -53,6 +53,11 @@ const routes = [
                     path: "questionnaireDetails",
                     name: "questionnaireDetails",
                     component: () => import("../views/questionnaireDetails" )
+                },
+                {
+                    path: "publish",
+                    name: "publish",
+                    component: () => import("../views/Publish" )
                 }
             ]
         }
@@ -75,6 +80,16 @@ const routes = [
                     path: "answerQuestionnaire",
                     name: "answerQuestionnaire",
                     component: () => import("../views/AnswerQuestionnaire")
+                },
+                {
+                    path: "questionnaireResult",
+                    name: "questionnaireResult",
+                    component: () => import("../views/QuestionnaireResult")
+                },
+                {
+                    path: "result",
+                    name: "result",
+                    component: () => import("../views/Result")
                 }
             ]
         }

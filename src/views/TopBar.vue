@@ -40,6 +40,9 @@
             <el-menu-item index="/topBar/questionnaire">
               <template #title>问卷管理</template>
             </el-menu-item>
+            <el-menu-item index="/topBar/publish">
+              <template #title>发布记录</template>
+            </el-menu-item>
           </el-menu>
         </el-aside>
         <el-container>
