@@ -8,7 +8,7 @@
             text-color="#fff"
             active-text-color="#ffd04b">
 
-          <el-menu-item index="3">消息中心</el-menu-item>
+          <el-menu-item index="3">心理测评</el-menu-item>
         </el-menu>
       </el-header>
       <el-container style="height: 100%;overflow-y: hidden">

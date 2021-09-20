@@ -61,16 +61,19 @@
           <el-button
               size="mini"
               type="primary"
+              :disabled="scope.row.questionnaireState==0" @click="routeLink2(scope.$index, scope.row)">查看问卷
+          </el-button>
+          <el-button
+              size="mini"
+              type="primary"
               :disabled="scope.row.questionnaireState!=0"
               @click="confirm(scope.$index, scope.row)">确认问卷
           </el-button>
-          <router-link :to="{name:'questionnaireDetails',params: {id: scope.row.questionnaireId}}">
-            <el-button
-                size="mini"
-                type="primary"
-                :disabled="scope.row.questionnaireState!=0">编辑问卷
-            </el-button>
-          </router-link>
+          <el-button
+              size="mini"
+              type="primary"
+              :disabled="scope.row.questionnaireState!=0" @click="routeLink(scope.$index, scope.row)">编辑问卷
+          </el-button>
           <el-button
               size="mini"
               type="danger"
@@ -275,6 +278,12 @@ export default {
     })
   },
   methods: {
+    routeLink2(index,row){
+      this.$router.push({name:'questionnaireDetailsView',params: {id: row.questionnaireId}})
+    },
+    routeLink(index,row){
+      this.$router.push({name:'questionnaireDetails',params: {id: row.questionnaireId}})
+    },
     queryQuestionnaire() {
       request.get("/selectQuestionnaire", this.queryParams).then(res => {
         let data = res.data;

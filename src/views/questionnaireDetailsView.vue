@@ -11,52 +11,10 @@
                     :label-width="formLabelWidth"></el-input>
         </el-form-item>
         <el-form-item align="left" label="计算方式">
-          <el-select v-model="questionnaire.calculation" placeholder="请选择" @change="changeCalculation">
-            <el-option label="因子" :value="0"></el-option>
-            <el-option label="总分" :value="1"></el-option>
-          </el-select>
+          {{questionnaire.calculation==0?"因子":"总分"}}
         </el-form-item>
-        <el-form-item align="left" label="因子个数" v-if="questionnaire.calculation===0">
-          <el-input-number v-model="factorNum" :min="1" :max="10" label="描述文字"></el-input-number>
-        </el-form-item>
-        <el-form-item align="left" label="模板">
-          <el-button @click="addTemplateOptions">添加选项</el-button>
-          <el-table
-              :data="questionnaire.topicTemplate"
-              style="width: 80%">
-            <el-table-column
-                label="ID"
-                width="50">
-              <template #default="scope">
-                <span>{{ scope.row.optionName }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-                label="选项内容"
-                width="180">
-              <template #default="scope">
-                <el-input v-model="scope.row.optionContent" placeholder="请输入内容">
-                </el-input>
-              </template>
-            </el-table-column>
-            <el-table-column
-                label="分值"
-                width="190">
-              <template #default="scope">
-                <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
-              </template>
-            </el-table-column>
-            <el-table-column
-                align="right">
-              <template slot-scope="scope">
-                <el-button
-                    size="mini"
-                    type="danger"
-                    @click="delTemplateOptions(scope.$index)">删除选项
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+        <el-form-item align="left" label="因子个数" v-if="questionnaire.calculation===0" >
+          <el-input-number v-model="factorNum" :min="1" :max="10" label="描述文字" :disabled="true"></el-input-number>
         </el-form-item>
       </el-form>
     </div>
@@ -71,7 +29,7 @@
             <span>{{ item.titleId }}</span>
           </el-form-item>
           <el-form-item align="left" label="题目">
-            <el-input input type="textarea" v-model="item.question" :label-width="formLabelWidth"></el-input>
+            <el-input input type="textarea" v-model="item.question" :label-width="formLabelWidth" ></el-input>
           </el-form-item>
           <el-form-item align="left" label="选项类型" prop="resource">
             <el-radio-group v-model="item.chooseType">
@@ -97,8 +55,6 @@
             </el-select>
           </el-form-item>
           <el-form-item align="left" label="选项">
-            <el-button @click="addOptions(item)">添加选项</el-button>
-            <el-button @click="negate(item)">反向取分</el-button>
             <el-table
                 :data="item.answerOptions"
                 style="width: 80%">
@@ -124,22 +80,10 @@
                   <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
                 </template>
               </el-table-column>
-              <el-table-column
-                  align="right">
-                <template slot-scope="scope">
-                  <el-button
-                      size="mini"
-                      type="danger"
-                      @click="delOptions(scope.$index, scope.row,item)">删除选项
-                  </el-button>
-                </template>
-              </el-table-column>
             </el-table>
           </el-form-item>
-          <el-button type="danger" @click="remove(item)">移除题目</el-button>
         </el-form>
       </div>
-      <el-button @click="addTemplate">添加题目</el-button>
     </div>
     <div v-if="this.questionnaire.calculation === 0">
     <span>变量</span>
@@ -158,7 +102,7 @@
           <el-input input type="textarea" v-model="item.introduction" :label-width="formLabelWidth"></el-input>
         </el-form-item>
         <el-form-item align="left" label="计算方式">
-          <el-select v-model="item.type" placeholder="请选择" @change="factorChange(item.factor)">
+          <el-select v-model="item.type" placeholder="请选择" @change="factorChange(item.factor)" :disabled="true">
             <el-option label="求和" :value="0"></el-option>
             <el-option label="求平均" :value="1"></el-option>
             <el-option label="求个数" :value="2"></el-option>
@@ -216,9 +160,7 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-button type="danger" @click="removeVariable(item)">移除变量</el-button>
       </el-form>
-      <el-button @click="addVariable">添加变量</el-button>
     </div>
     </div>
     <span>结果</span>
@@ -253,14 +195,9 @@
                        :value="item.value"></el-option>
           </el-select>
           <el-input-number v-model="condition.value" :min="1" :max="100" label="值"></el-input-number>
-          <el-button type="danger" @click="removeCondition(item,condition)">移除条件</el-button>
         </el-form-item>
-        <el-button @click="addCondition(item)">添加条件</el-button>
-        <el-button type="danger" @click="removeResult(item)">移除结果</el-button>
       </el-form>
-      <el-button @click="addResult">添加结果</el-button>
     </div>
-    <el-button style="float:right" @click="questionnaireSubmit">提交</el-button>
   </div>
 </template>
 
@@ -490,7 +427,7 @@ export default {
     }
   },
   mounted() {
-    let that = this;
+    let that=this
     this.id = this.$route.params.id
     request.get("/questions", {"id": this.id}).then(res => {
       this.questionnaireForm = res.data;

@@ -6,6 +6,9 @@ Axios.defaults.baseURL = "http://192.168.1.105:8081";
 // 请求拦截
 Axios.interceptors.request.use(
     (config) => {
+        if (localStorage.getItem("sa-token")){
+            config.headers["satoken"]=localStorage.getItem("sa-token")
+        }
         // token认证写在这里
         return config;
     },

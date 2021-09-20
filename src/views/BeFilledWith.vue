@@ -8,7 +8,7 @@
         <div>学生：{{item.studentName}}</div>
         <div>学生：{{item.studentId}}</div>
         <div>{{item.state}}</div>
-        <router-link :to="{name:'answerQuestionnaire',params: {id: item.questionnaireId,userId:userId,studentId:item.studentId,state:item.state,publishId:item.publishId}}">
+        <router-link :to="{name:'answerQuestionnaire',params: {userRole:user.userRole-2,id: item.questionnaireId,userId:user.userId,studentId:item.studentId,state:item.state,publishId:item.publishId}}">
           <el-button>填写问卷</el-button>
         </router-link>
       </el-collapse-item>
@@ -22,20 +22,27 @@ import request from "../utils/request";
 export default {
   name: "BeFilledWith",
   mounted() {
-    this.queryQuestionnaire()
+    request.get("/getUser").then(res => {
+      this.user = res.data
+      this.queryUser()
+      this.queryQuestionnaire()
+    })
+
   },
   data(){
     return{
-      userId:200877915885637,
+      user:[],
       questionnaire:[]
     }
   },
   methods:{
+    queryUser(){
+      request.get("/getUser").then(res => {
+        this.user = res.data
+      })
+    },
     queryQuestionnaire(){
-      request.get("/getUserQuestionnaire",{
-        userId:this.userId
-      }).then(res=>{
-        console.log(res.data)
+      request.get("/getUserQuestionnaire").then(res=>{
         this.questionnaire=res.data;
       })
     },

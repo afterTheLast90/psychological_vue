@@ -291,6 +291,7 @@ export default {
       }
     };
     return {
+      userId:192386930036805,
       input:"",
       users: [],
       schools: [],
@@ -442,7 +443,7 @@ export default {
       this.$refs["user"].validate((valid) => {
         if (valid) {
           this.addFormVisible = false;
-          request.post("/modifyUser", {
+          request.post("/modifyTeacher", {
             "userId":this.user.id,
             "userAccount": this.user.account,
             "userBirthday": this.user.birthday,

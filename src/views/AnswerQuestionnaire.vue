@@ -66,12 +66,13 @@ export default {
   },
   mounted() {
     this.id = this.$route.params.id
+    this.role = this.$route.params.userRole
     this.userId = this.$route.params.userId
     this.studentId=this.$route.params.studentId
     this.state=this.$route.params.state
     this.publishId=this.$route.params.publishId
     if (this.state){
-      this.queryNewQuestionnaire();
+      // this.queryNewQuestionnaire();
     }else {
       this.queryAnswer();
       this.queryOldQuestionnaire();
@@ -190,7 +191,6 @@ export default {
         "role":this.role
       }).then(res=>{
       })
-      console.log(111)
     }
   }
 }
