@@ -311,6 +311,7 @@ export default {
   watch: {
     factorNum(val, oldVal) {
       this.factors = []
+
       for (let i = 1; i <= val; i++) {
         this.factors.push({value: i, label: "因子" + i})
       }

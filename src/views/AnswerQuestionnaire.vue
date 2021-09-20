@@ -54,7 +54,7 @@ export default {
   data() {
     return {
       state:null,
-      role:2,
+      role:0,
       answers: [],
       id: null,
       userId: null,
@@ -72,7 +72,7 @@ export default {
     this.state=this.$route.params.state
     this.publishId=this.$route.params.publishId
     if (this.state){
-      // this.queryNewQuestionnaire();
+      this.queryNewQuestionnaire();
     }else {
       this.queryAnswer();
       this.queryOldQuestionnaire();

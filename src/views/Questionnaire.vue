@@ -229,7 +229,6 @@ export default {
       dataTime: ["", ""],
       releaseParams: {
         questionnaireId: null,
-        userId:null,
         publishType: 2,
         id: null,
         releaseTime: null,
@@ -337,7 +336,6 @@ export default {
       this.$refs["questionnaires"].validate((valid) => {
         if (valid) {
           request.post("/insertQuestionnaire", null, {
-            creator:this.userId,
             introduction: this.questionnaires.questionnaireIntroduction,
             name: this.questionnaires.questionnaireName
           }).then(res => {
@@ -377,8 +375,6 @@ export default {
     releaseSubmit() {
       this.releaseParams.releaseTime = this.dataTime[0];
       this.releaseParams.deadLine = this.dataTime[1];
-      this.releaseParams.userId=this.userId;
-      console.log(this.releaseParams)
       this.$refs["releaseParams"].validate((valid) => {
         if (valid) {
           request.post("/release", this.releaseParams).then(res => {

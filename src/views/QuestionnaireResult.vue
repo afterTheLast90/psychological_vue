@@ -41,7 +41,6 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userId: 200878379860037,
       },
       page: {
         pageSize: 0,

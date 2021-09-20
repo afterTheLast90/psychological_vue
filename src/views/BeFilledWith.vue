@@ -8,7 +8,7 @@
         <div>学生：{{item.studentName}}</div>
         <div>学生：{{item.studentId}}</div>
         <div>{{item.state}}</div>
-        <router-link :to="{name:'answerQuestionnaire',params: {userRole:user.userRole-2,id: item.questionnaireId,userId:user.userId,studentId:item.studentId,state:item.state,publishId:item.publishId}}">
+        <router-link :to="{name:'answerQuestionnaire',params: {userRole:user.users.userRole-2,id: item.questionnaireId,userId:user.users.userId,studentId:item.studentId,state:item.state,publishId:item.publishId}}">
           <el-button>填写问卷</el-button>
         </router-link>
       </el-collapse-item>
