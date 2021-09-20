@@ -10,6 +10,10 @@ const routes = [
             name: 'login',
             component: () => import("../views/Login")
         }, {
+            path: '/LoginAdmin',
+            name: 'LoginAdmin',
+            component: () => import('../views/LoginAdmin')
+        }, {
             path: '/main',
             name: 'main',
             component: () => import("../views/Main")
@@ -53,7 +57,7 @@ const routes = [
                     path: "questionnaireDetails",
                     name: "questionnaireDetails",
                     component: () => import("../views/questionnaireDetails" )
-                },,
+                }, ,
                 {
                     path: "questionnaireDetailsView",
                     name: "questionnaireDetailsView",

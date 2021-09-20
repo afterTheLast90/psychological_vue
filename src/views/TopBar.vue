@@ -16,31 +16,30 @@
           <el-menu
               style="height: 100%"
               :uniqueOpened="true"
-              default-active="/topBar/administrator"
+              default-active="/topBar/questionnaire"
               background-color="#545c64"
               text-color="#fff"
               active-text-color="#ffd04b" :router="true">
-            <el-menu-item index="/topBar/administrator">
+            <el-menu-item index="/topBar/administrator" v-if="role==0">
               <template #title>管理员管理</template>
             </el-menu-item>
 
-            <el-menu-item index="/topBar/area">
+            <el-menu-item index="/topBar/area" v-if="role==0 || role==1">
               <template #title>地区管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/teacher">
-
+            <el-menu-item index="/topBar/teacher" v-if="role==0 || role==1">
               <template #title>教师管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/classes">
+            <el-menu-item index="/topBar/classes" v-if="role==0 || role==1 || role ==4">
               <template #title>班级管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/student">
+            <el-menu-item index="/topBar/student" v-if="role==0 || role==1 || role ==4">
               <template #title>学生管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/questionnaire">
-              <template #title>问卷管理</template>
+            <el-menu-item index="/topBar/questionnaire" v-if="role==0 || role==1 || role ==4">
+              <template #title >问卷管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/publish">
+            <el-menu-item index="/topBar/publish" v-if="role==0 || role==1 || role ==4">
               <template #title>发布记录</template>
             </el-menu-item>
           </el-menu>
@@ -63,8 +62,18 @@
 </template>
 
 <script>
-</script>
 
+  export default {
+    data() {
+      return {
+        role : -1
+      }
+    },
+    mounted() {
+      this.role = localStorage.getItem("userRole")
+    }
+  }
+</script>
 <style>
 
 </style>

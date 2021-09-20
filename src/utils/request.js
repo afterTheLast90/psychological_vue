@@ -2,7 +2,7 @@ import axios from "axios";
 import {Message} from 'element-ui';
 
 var Axios = axios.create();
-Axios.defaults.baseURL = "http://192.168.1.105:8081";
+Axios.defaults.baseURL = "http://localhost:8081";
 // 请求拦截
 Axios.interceptors.request.use(
     (config) => {
@@ -27,19 +27,13 @@ Axios.interceptors.response.use(
             });
         } else if (res.data.code === 201) {
             console.log(res.data)
-        } else if (res.data.code === 400) {
+        } else {
             Message({
                 showClose: true,
                 message: res.data.msg,
                 type: 'error'
             });
-        } else {
-            Message({
-                showClose: true,
-                message: config.data.msg,
-                type: 'error'
-            });
-            Promise.reject(err);
+            return Promise.reject(res);
         }
         return res.data ;
     },
@@ -49,7 +43,7 @@ Axios.interceptors.response.use(
             message: "网络异常，请稍后再试",
             type: 'error'
         });
-        Promise.reject(err);
+        return Promise.reject(err);
     }
 );
 
