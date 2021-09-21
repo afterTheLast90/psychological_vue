@@ -60,22 +60,22 @@
           <span>{{ scope.row.classes[0].schoolName }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-          label="手机号"
-          width="120">
-        <template #default="scope">
-          <span>{{ scope.row.userPhoneNumber }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-          label="手机验证"
-          width="100">
-        <template #default="scope">
-          <el-tag :type="scope.row.phoneNumberChecked===1?'success':'warning'" effect="dark">
-            {{ scope.row.phoneNumberChecked === 1 ? "已验证" : "未验证" }}
-          </el-tag>
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--          label="手机号"-->
+<!--          width="120">-->
+<!--        <template #default="scope">-->
+<!--          <span>{{ scope.row.userPhoneNumber }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+<!--      <el-table-column-->
+<!--          label="手机验证"-->
+<!--          width="100">-->
+<!--        <template #default="scope">-->
+<!--          <el-tag :type="scope.row.phoneNumberChecked===1?'success':'warning'" effect="dark">-->
+<!--            {{ scope.row.phoneNumberChecked === 1 ? "已验证" : "未验证" }}-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
           label="班级"
           width="180">
@@ -122,12 +122,12 @@
               :disabled="scope.row.state===1"
               @click="handleDeleteClass(scope.$index, scope.row)">退出班级
           </el-button>
-          <el-button
-              size="mini"
-              type="danger"
-              :disabled="scope.row.state===1"
-              @click="handleDelete(scope.$index, scope.row)">删除学生
-          </el-button>
+<!--          <el-button-->
+<!--              size="mini"-->
+<!--              type="danger"-->
+<!--              :disabled="scope.row.state===1"-->
+<!--              @click="handleDelete(scope.$index, scope.row)">删除学生-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>

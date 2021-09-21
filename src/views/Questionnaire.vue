@@ -74,11 +74,11 @@
               type="primary"
               :disabled="scope.row.questionnaireState!=0" @click="routeLink(scope.$index, scope.row)">编辑问卷
           </el-button>
-          <el-button
-              size="mini"
-              type="danger"
-              @click="handleDel(scope.$index, scope.row)">删除问卷
-          </el-button>
+<!--          <el-button-->
+<!--              size="mini"-->
+<!--              type="danger"-->
+<!--              @click="handleDel(scope.$index, scope.row)">删除问卷-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -98,7 +98,7 @@
         <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" class="releaseParams"
                  ref="releaseParams">
           <el-form-item label="发布类型" prop="classes" :label-width="formLabelWidth">
-            <el-select v-model="releaseParams.publishType" placeholder="请选择">
+            <el-select v-model="releaseParams.publishType" placeholder="请选择" @change="typeChange">
               <el-option label="地区" :value=0></el-option>
               <el-option label="学校" :value=1></el-option>
               <el-option label="班级" :value=2></el-option>
@@ -277,6 +277,11 @@ export default {
     })
   },
   methods: {
+    typeChange(){
+      this.releaseParams.id=null
+      this.selectedOptions=[];
+    },
+
     routeLink2(index,row){
       this.$router.push({name:'questionnaireDetailsView',params: {id: row.questionnaireId}})
     },

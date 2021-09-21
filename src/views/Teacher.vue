@@ -78,15 +78,15 @@
           <span style="margin-left: 10px">{{ scope.row.userPhoneNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-          label="手机验证"
-          width="180">
-        <template #default="scope">
-          <el-tag :type="scope.row.phoneNumberChecked===1?'success':'warning'" effect="dark">
-            {{ scope.row.phoneNumberChecked === 1 ? "已验证" : "未验证" }}
-          </el-tag>
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--          label="手机验证"-->
+<!--          width="180">-->
+<!--        <template #default="scope">-->
+<!--          <el-tag :type="scope.row.phoneNumberChecked===1?'success':'warning'" effect="dark">-->
+<!--            {{ scope.row.phoneNumberChecked === 1 ? "已验证" : "未验证" }}-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
           align="right">
         <template slot-scope="scope">
@@ -101,12 +101,12 @@
               :disabled="scope.row.state===1"
               @click="handleEdit(scope.$index, scope.row)">编辑
           </el-button>
-          <el-button
-              size="mini"
-              type="danger"
-              :disabled="scope.row.state===1"
-              @click="handleDelete(scope.$index, scope.row)">删除
-          </el-button>
+<!--          <el-button-->
+<!--              size="mini"-->
+<!--              type="danger"-->
+<!--              :disabled="scope.row.state===1"-->
+<!--              @click="handleDelete(scope.$index, scope.row)">删除-->
+<!--          </el-button>-->
         </template>
       </el-table-column>
     </el-table>
@@ -178,7 +178,6 @@
     </div>
     <div>
       <el-dialog width="35%" title="编辑教师" :visible.sync="editFormVisible">
-
         <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
             <el-input v-model="user.name" autocomplete="off"></el-input>

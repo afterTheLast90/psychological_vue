@@ -9,6 +9,7 @@
           <el-form-item label="姓名" :label-width="formLabelWidth" align="left">
             <span style="width:auto; display:block; text-align:left;">
             {{ user.users.userName }}
+              {{user.users.userRole}}
             </span>
           </el-form-item>
           <el-form-item label="账号" :label-width="formLabelWidth" align="left">
@@ -26,7 +27,7 @@
             {{ user.users.userBirthday }}
             </span>
           </el-form-item>
-          <el-form-item label="班级列表" :label-width="formLabelWidth" align="left">
+          <el-form-item label="班级列表" :label-width="formLabelWidth" align="left" v-if="user.users.userRole!=4">
             <span style="width:auto; display:block; text-align:left;">
             <div v-for="(item,index) in user.className" :key="index">
               {{item}}
@@ -39,7 +40,7 @@
     </el-container>
 
     <div>
-      <el-dialog width="100%" title="加入班级" :visible.sync="editClassFormVisible">
+      <el-dialog width="100%" title="加入班级" :visible.sync="editClassFormVisible" >
         <el-form>
           <el-form-item label="班级" prop="name" :label-width="formLabelWidth">
             <el-cascader

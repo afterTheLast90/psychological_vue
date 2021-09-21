@@ -70,15 +70,15 @@
           <span style="margin-left: 10px">{{ scope.row.userPhoneNumber }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-          label="手机验证"
-          width="180">
-        <template #default="scope">
-          <el-tag :type="scope.row.phoneNumberChecked===1?'success':'warning'" effect="dark">
-            {{ scope.row.phoneNumberChecked === 1 ? "已验证" : "未验证" }}
-          </el-tag>
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--          label="手机验证"-->
+<!--          width="180">-->
+<!--        <template #default="scope">-->
+<!--          <el-tag :type="scope.row.phoneNumberChecked===1?'success':'warning'" effect="dark">-->
+<!--            {{ scope.row.phoneNumberChecked === 1 ? "已验证" : "未验证" }}-->
+<!--          </el-tag>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
           label="地区"
           width="180">

@@ -109,7 +109,8 @@ export default {
     queryAnswer(){
       request.get("/getUserQuestionnaires",{
         "userId":this.studentId,
-        "questionnaireId":this.id
+        "questionnaireId":this.id,
+        "publishId":this.publishId
       }).then(res=>{
         if (res.data.answer!=null){
           this.answers=res.data.answer
@@ -149,6 +150,7 @@ export default {
         "answers":submitDate,
         "questionnaireId": this.id,
         "userId": this.studentId,
+        "publishId":this.publishId,
         "role":this.role
       }).then(res=>{
       })

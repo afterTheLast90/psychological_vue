@@ -389,7 +389,6 @@ export default {
     },
     delSchool(index, row) {
       this.schools=row.school;
-      console.log(this.schools);
       this.delSchoolFormVisible = true;
     },
     delSchoolSubmit() {

@@ -1,20 +1,20 @@
 <template>
   <div style="height: 100%">
     <el-container style="height: 100%">
-      <el-header style="padding: 0px">
+      <el-header style="padding: 0px;height: 60px">
         <el-menu
             mode="horizontal"
             background-color="#545c64"
             text-color="#fff"
             active-text-color="#ffd04b">
 
-          <el-menu-item index="3">心理测评</el-menu-item>
+          <h1 style="color: #DCDFE6" >心理测评后台管理系统</h1>
         </el-menu>
       </el-header>
       <el-container style="height: 100%;overflow-y: hidden">
         <el-aside width="200px">
           <el-menu
-              style="height: 100%"
+              style="height: 100%;border-right-width: 0px "
               :uniqueOpened="true"
               default-active="/topBar/questionnaire"
               background-color="#545c64"
@@ -36,24 +36,20 @@
             <el-menu-item index="/topBar/student" v-if="role==0 || role==1 || role ==4">
               <template #title>学生管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/questionnaire" v-if="role==0 || role==1 || role ==4">
+            <el-menu-item index="/topBar/questionnaire" v-if="role==0 || role==1">
               <template #title >问卷管理</template>
             </el-menu-item>
-            <el-menu-item index="/topBar/publish" v-if="role==0 || role==1 || role ==4">
+            <el-menu-item index="/topBar/publish" v-if="role==0 || role==1">
               <template #title>发布记录</template>
             </el-menu-item>
           </el-menu>
         </el-aside>
         <el-container>
           <el-main>
-
             <router-view></router-view>
-
           </el-main>
           <el-footer>Footer</el-footer>
-
         </el-container>
-
       </el-container>
     </el-container>
 
