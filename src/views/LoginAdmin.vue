@@ -61,7 +61,7 @@ export default {
           }).then(res=>{
             localStorage.setItem("sa-token",res.data.token)
             localStorage.setItem("userRole",res.data.role)
-            this.$router.push("/topBar/Questionnaire");
+            this.$router.push("/topBar/classes");
           })
           // 使用 vue-router 路由到指定页面，该方式称之为编程式导航
         } else {

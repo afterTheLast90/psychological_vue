@@ -9,7 +9,6 @@
           <el-form-item label="姓名" :label-width="formLabelWidth" align="left">
             <span style="width:auto; display:block; text-align:left;">
             {{ user.users.userName }}
-              {{user.users.userRole}}
             </span>
           </el-form-item>
           <el-form-item label="账号" :label-width="formLabelWidth" align="left">

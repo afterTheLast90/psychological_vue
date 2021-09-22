@@ -95,8 +95,7 @@
     <div>
       <el-dialog width="35%" title="发布问卷" :visible.sync="releaseFormVisible">
 
-        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" class="releaseParams"
-                 ref="releaseParams">
+        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules"    ref="release">
           <el-form-item label="发布类型" prop="publishType" :label-width="formLabelWidth">
             <el-select v-model="releaseParams.publishType" placeholder="请选择" @change="typeChange">
               <el-option label="地区" :value=0></el-option>
@@ -105,7 +104,7 @@
               <el-option label="学生个人" :value=3></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="班级" prop="selectedOptions" :label-width="formLabelWidth"
+          <el-form-item label="班级" prop="id" :label-width="formLabelWidth"
                         v-if="releaseParams.publishType==2||releaseParams.publishType==3">
             <el-cascader
                 v-model="selectedOptions"
@@ -142,18 +141,18 @@
               </el-option>
             </el-select>
           </el-form-item>
-<!--          <el-form-item label="时间" prop="dataTime" :label-width="formLabelWidth">-->
-<!--            <el-date-picker-->
-<!--                @change="handleChangeTime"-->
-<!--                :editable="false"-->
-<!--                v-model="dataTime"-->
-<!--                type="datetimerange"-->
-<!--                range-separator="至"-->
-<!--                value-format="yyyy-MM-dd HH:mm:ss"-->
-<!--                start-placeholder="开始日期"-->
-<!--                end-placeholder="结束日期">-->
-<!--            </el-date-picker>-->
-<!--          </el-form-item>-->
+          <el-form-item label="时间" prop="dataTime" :label-width="formLabelWidth">
+            <el-date-picker
+                @change="handleChangeTime"
+                :editable="false"
+                v-model="releaseParams.dataTime"
+                type="datetimerange"
+                range-separator="至"
+                value-format="yyyy-MM-dd HH:mm:ss"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
@@ -165,7 +164,7 @@
     <div>
       <el-dialog width="35%" title="添加问卷" :visible.sync="addFormVisible">
 
-        <el-form :model="questionnaires" status-icon :rules="rules" class="questionnaires" ref="questionnaires">
+        <el-form :model="questionnaires" status-icon :rules="rules" ref="questionnaires">
           <el-form-item label="问卷名称" prop="questionnaireName" :label-width="formLabelWidth">
             <el-input v-model="questionnaires.questionnaireName" autocomplete="off"></el-input>
           </el-form-item>
@@ -200,19 +199,8 @@ export default {
       }
       callback();
     };
-    let validateClasses = (rule, value, callback) => {
-      console.log(value)
-      if (value === '' && value === null) {
-        callback(new Error('班级不能为空'))
-      }
-      callback();
-    };
-    let validateTime = (rule, value, callback) => {
-      if (value === '' && value === null) {
-        callback(new Error('时间不能为空'))
-      }
-      callback();
-    };
+
+
     return {
       userId:192386930036805,
       classId: null,
@@ -234,13 +222,14 @@ export default {
         id: null,
         releaseTime: null,
         deadLine: null,
+        dataTime: [],
       },
       releaseParamsRules: {
-        classes: [
-          {validator: validateClasses, trigger: 'blur'}
+        id: [
+          {required:true,message:"请选择", trigger: 'blur'}
         ],
-        time: [
-          {validator: validateTime, trigger: 'blur'}
+        dataTime: [
+          {required:true,message:"请选择发布时间", trigger: 'blur'}
         ],
       },
       queryParams: {
@@ -260,10 +249,10 @@ export default {
       },
       rules: {
         questionnaireName: [
-          {validator: validateName, trigger: 'blur'}
+          {required:true,message:"请输入问卷名",trigger: 'blur'}
         ],
         questionnaireIntroduction: [
-          {validator: validateIntroduction, trigger: 'blur'}
+          {required:true,message:"请输入问卷介绍", trigger: 'blur'}
         ],
       }
     }
@@ -378,11 +367,12 @@ export default {
     handleChangeTime() {
       console.log(this.dataTime)
     },
-    releaseSubmit(release) {
-      this.releaseParams.releaseTime = this.dataTime[0];
-      this.releaseParams.deadLine = this.dataTime[1];
-      this.$refs[release].validate((valid) => {
-        console.log(valid)
+    releaseSubmit() {
+      this.releaseParams.releaseTime = this.releaseParams.dataTime[0];
+      this.releaseParams.deadLine = this.releaseParams.dataTime[1];
+      console.log(this.releaseParams.dataTime)
+
+      this.$refs['release'].validate((valid) => {
         if (valid) {
           request.post("/release", this.releaseParams).then(res => {
             this.queryQuestionnaire();

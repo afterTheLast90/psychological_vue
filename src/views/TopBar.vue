@@ -3,6 +3,7 @@
     <el-container style="height: 100%">
       <el-header style="padding: 0px;height: 60px">
         <el-menu
+            style="height: 60px;"
             mode="horizontal"
             background-color="#545c64"
             text-color="#fff"

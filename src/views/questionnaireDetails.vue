@@ -2,7 +2,7 @@
   <div>
     <div>
       <el-form label-position="left" style="width: 80%" v-model="questionnaire" status-icon class="questionnaire"
-               ref="questionnaire" label-width="90px" :rules="baseRules">
+               ref="questionnaire" label-width="90px">
         <el-form-item align="left" label="问卷名称" prop="questionnarieName">
           <el-input v-model="questionnaire.questionnaireName" :label-width="formLabelWidth"></el-input>
         </el-form-item>
@@ -271,6 +271,7 @@ import {Message} from "element-ui";
 export default {
   data() {
     return {
+      questionnaireRule: {},
       options: [{
         value: 0,
         label: '='
@@ -344,7 +345,7 @@ export default {
       console.log(this.questionnaireForm)
     },
     addTemplate() {
-      if (!this.questionnaire.topicTemplate){
+      if (!this.questionnaire.topicTemplate) {
         Message({
           showClose: true,
           message: "请先设置模板选项",
@@ -407,7 +408,7 @@ export default {
     },
     negate(item) {
       item.answerOptions.forEach(function (s) {
-        s.optionPoints = item.answerOptions.length+1 - s.optionPoints
+        s.optionPoints = item.answerOptions.length + 1 - s.optionPoints
       })
     },
     addVariable() {
@@ -493,16 +494,31 @@ export default {
       })
     },
     questionnaireSubmit() {
+      let arr = document.querySelectorAll('input')
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].value === '') {
+          this.$message("请检查");
+          return;
+        }
+      }
+      arr = document.querySelectorAll('textarea')
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i].value === '') {
+          this.$message("请检查");
+          return;
+        }
+      }
+
       if (this.questionnaire.calculation === 1) {
         this.questionnaireForm.forEach(function (s) {
           s.factorGroupId = 0;
         })
       }
       request.post("/modifyQuestionnaire", this.questionnaire).then(res => {
-      }).then(res=>{
+      }).then(res => {
         request.post("/modifyDetails", this.questionnaireForm).then(res => {
-        }).then(res=>{
-          this.$router.push({name:'questionnaire'})
+        }).then(res => {
+          this.$router.push({name: 'questionnaire'})
         })
       })
     }

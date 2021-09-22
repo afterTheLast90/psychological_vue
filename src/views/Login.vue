@@ -195,7 +195,7 @@ export default {
           }).then(res => {
             localStorage.setItem("sa-token", res.data.token)
             localStorage.setItem("userRole", res.data.role)
-            this.$router.push("/mobile/beFilledWith");
+            this.$router.push("/mobile/personalInformation");
           })
         } else {
           return false;

@@ -138,6 +138,9 @@ export default {
         }
       }
       for (let i = 0; i < submitDate.length; i++) {
+        if ( this.questionnaireForm[i].chosePeople !==this.role){
+          continue;
+        }
         submitDate[i].answer.forEach(function (s,num){
           that.questionnaireForm[i].answerOptions.forEach(function (opti,n){
             if (s===opti.optionName){
@@ -177,6 +180,9 @@ export default {
         }
       }
       for (let i = 0; i < submitDate.length; i++) {
+        if ( this.questionnaire[i].chosePeople !==this.role){
+          continue;
+        }
         submitDate[i].answer.forEach(function (s,num){
           that.questionnaire[i].answerOptions.forEach(function (opti,n){
             if (s===opti.optionName){
@@ -193,6 +199,7 @@ export default {
         "userId": this.userId,
         "role":this.role
       }).then(res=>{
+        this.$router.push({name:'beFilledWith'})
       })
     }
   }
