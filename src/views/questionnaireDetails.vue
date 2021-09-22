@@ -498,11 +498,12 @@ export default {
           s.factorGroupId = 0;
         })
       }
-
-
       request.post("/modifyQuestionnaire", this.questionnaire).then(res => {
-      })
-      request.post("/modifyDetails", this.questionnaireForm).then(res => {
+      }).then(res=>{
+        request.post("/modifyDetails", this.questionnaireForm).then(res => {
+        }).then(res=>{
+          this.$router.push({name:'questionnaire'})
+        })
       })
     }
   },

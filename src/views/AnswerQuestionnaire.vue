@@ -153,6 +153,7 @@ export default {
         "publishId":this.publishId,
         "role":this.role
       }).then(res=>{
+        this.$router.push({name:'beFilledWith'})
       })
     },
     newSubmit(){
