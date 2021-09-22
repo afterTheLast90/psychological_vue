@@ -54,14 +54,14 @@
           <span style="margin-left: 10px">{{ scope.row.userAccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-          label="年龄"
-          width="180">
-        <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.age }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--          label="年龄"-->
+<!--          width="180">-->
+<!--        <template #default="scope">-->
+<!--          <i class="el-icon-time"></i>-->
+<!--          <span style="margin-left: 10px">{{ scope.row.age }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
           label="学校"
           width="180">
@@ -145,15 +145,15 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
+<!--            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">-->
+<!--              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">-->
+<!--                <el-date-picker-->
+<!--                    v-model="user.birthday"-->
+<!--                    type="date"-->
+<!--                    placeholder="选择日期">-->
+<!--                </el-date-picker>-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
           </el-row>
           <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
             <el-input v-model="user.phone_number" autocomplete="off"></el-input>
@@ -197,15 +197,15 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
+<!--            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">-->
+<!--              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">-->
+<!--                <el-date-picker-->
+<!--                    v-model="user.birthday"-->
+<!--                    type="date"-->
+<!--                    placeholder="选择日期">-->
+<!--                </el-date-picker>-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
           </el-row>
           <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
             <el-input v-model="user.phone_number" autocomplete="off"></el-input>
@@ -260,14 +260,14 @@ export default {
       }
       callback();
     };
-    let validateBirthday = (rule, value, callback) => {
-      if (value === null) {
-        callback(new Error('出生日期不能为空'))
-      } else if (value > new Date()) {
-        callback(new Error('出生日期不得大于当前时间'))
-      }
-      callback();
-    };
+    // let validateBirthday = (rule, value, callback) => {
+    //   if (value === null) {
+    //     callback(new Error('出生日期不能为空'))
+    //   } else if (value > new Date()) {
+    //     callback(new Error('出生日期不得大于当前时间'))
+    //   }
+    //   callback();
+    // };
     let validateGender = (rule, value, callback) => {
       if (value === "") {
         callback(new Error('性别不能为空'))
@@ -336,9 +336,9 @@ export default {
         password: [
           {validator: validatePass, trigger: 'blur'}
         ],
-        birthday: [
-          {validator: validateBirthday, trigger: 'blur'}
-        ],
+        // birthday: [
+        //   {validator: validateBirthday, trigger: 'blur'}
+        // ],
         gender: [
           {validator: validateGender, trigger: 'blur'}
         ],
@@ -439,6 +439,7 @@ export default {
       this.queryUsers();
     },
     editTeacherSubmit() {
+      this.user.birthday=new Date();
       this.$refs["user"].validate((valid) => {
         if (valid) {
           this.addFormVisible = false;

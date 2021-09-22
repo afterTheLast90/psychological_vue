@@ -97,7 +97,7 @@
 
         <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" class="releaseParams"
                  ref="releaseParams">
-          <el-form-item label="发布类型" prop="classes" :label-width="formLabelWidth">
+          <el-form-item label="发布类型" prop="publishType" :label-width="formLabelWidth">
             <el-select v-model="releaseParams.publishType" placeholder="请选择" @change="typeChange">
               <el-option label="地区" :value=0></el-option>
               <el-option label="学校" :value=1></el-option>
@@ -105,14 +105,14 @@
               <el-option label="学生个人" :value=3></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="班级" prop="classes" :label-width="formLabelWidth"
+          <el-form-item label="班级" prop="selectedOptions" :label-width="formLabelWidth"
                         v-if="releaseParams.publishType==2||releaseParams.publishType==3">
             <el-cascader
                 v-model="selectedOptions"
                 :options="options"
                 @change="handleChange"></el-cascader>
           </el-form-item>
-          <el-form-item label="地区" prop="classes" :label-width="formLabelWidth" v-if="releaseParams.publishType==0">
+          <el-form-item label="地区" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==0">
             <el-select v-model="releaseParams.id" placeholder="请选择">
               <el-option
                   v-for="area in areas"
@@ -122,7 +122,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="学校" prop="classes" :label-width="formLabelWidth" v-if="releaseParams.publishType==1">
+          <el-form-item label="学校" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==1">
             <el-select v-model="releaseParams.id" placeholder="请选择">
               <el-option
                   v-for="school in schools"
@@ -132,7 +132,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="学生个人" prop="classes" :label-width="formLabelWidth" v-if="releaseParams.publishType==3">
+          <el-form-item label="学生个人" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==3">
             <el-select v-model="releaseParams.id" placeholder="请选择">
               <el-option
                   v-for="student in students"
@@ -142,18 +142,18 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="时间" prop="time" :label-width="formLabelWidth">
-            <el-date-picker
-                @change="handleChangeTime"
-                :editable="false"
-                v-model="dataTime"
-                type="datetimerange"
-                range-separator="至"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
+<!--          <el-form-item label="时间" prop="dataTime" :label-width="formLabelWidth">-->
+<!--            <el-date-picker-->
+<!--                @change="handleChangeTime"-->
+<!--                :editable="false"-->
+<!--                v-model="dataTime"-->
+<!--                type="datetimerange"-->
+<!--                range-separator="至"-->
+<!--                value-format="yyyy-MM-dd HH:mm:ss"-->
+<!--                start-placeholder="开始日期"-->
+<!--                end-placeholder="结束日期">-->
+<!--            </el-date-picker>-->
+<!--          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
@@ -201,6 +201,7 @@ export default {
       callback();
     };
     let validateClasses = (rule, value, callback) => {
+      console.log(value)
       if (value === '' && value === null) {
         callback(new Error('班级不能为空'))
       }
@@ -377,10 +378,11 @@ export default {
     handleChangeTime() {
       console.log(this.dataTime)
     },
-    releaseSubmit() {
+    releaseSubmit(release) {
       this.releaseParams.releaseTime = this.dataTime[0];
       this.releaseParams.deadLine = this.dataTime[1];
-      this.$refs["releaseParams"].validate((valid) => {
+      this.$refs[release].validate((valid) => {
+        console.log(valid)
         if (valid) {
           request.post("/release", this.releaseParams).then(res => {
             this.queryQuestionnaire();

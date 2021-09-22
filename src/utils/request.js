@@ -2,7 +2,7 @@ import axios from "axios";
 import {Message} from 'element-ui';
 
 var Axios = axios.create();
-Axios.defaults.baseURL = "http://192.168.1.105:8081";
+Axios.defaults.baseURL = "http://192.168.43.66:8081";
 // 请求拦截
 Axios.interceptors.request.use(
     (config) => {
