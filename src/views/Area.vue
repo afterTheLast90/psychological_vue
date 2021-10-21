@@ -20,8 +20,8 @@
           </el-option>
         </el-select>
       </el-col>
-      <el-col style="padding-left: 0px; padding-right: 0px" :span="3">
-        <el-select v-model="queryParams.provinceId" placeholder="请选择省">
+      <el-col style="padding-left: 0px; padding-right: 0;" :span="3">
+        <el-select v-model="queryParams.provinceId" style=";margin-left: 10px" placeholder="请选择省">
           <el-option
               v-for="item in provinces"
               :key="item.provinceId"
@@ -121,7 +121,7 @@
     </el-pagination>
 
     <div>
-      <el-dialog width="35%" title="添加/编辑地区" :visible.sync="addFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="添加/编辑地区" :visible.sync="addFormVisible">
         <el-form :model="area">
           <el-form-item label="地区" :label-width="formLabelWidth">
             <el-cascader
@@ -151,7 +151,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="修改负责人" :visible.sync="editFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="修改负责人" :visible.sync="editFormVisible">
         <el-form :model="area">
           <el-form-item label="负责人" :label-width="formLabelWidth">
             <el-select v-model="principal" placeholder="请选择负责人">
@@ -171,7 +171,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="添加学校" :visible.sync="addSchoolFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="添加学校" :visible.sync="addSchoolFormVisible">
         <el-form :model="school" status-icon :rules="rules" class="school" ref="school">
           <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
             <el-input v-model="school.name" autocomplete="off"></el-input>
@@ -185,7 +185,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="删除学校" :visible.sync="delSchoolFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="删除学校" :visible.sync="delSchoolFormVisible">
         <el-form>
           <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
             <el-select v-model="school.schoolId" >

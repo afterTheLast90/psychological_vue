@@ -20,7 +20,7 @@
               default-active="/topBar/questionnaire"
               background-color="#545c64"
               text-color="#fff"
-              active-text-color="#ffd04b" :router="true">
+              active-text-color="#ffd04b" router :default-active="this.$route.path">
             <el-menu-item index="/topBar/administrator" v-if="role==0">
               <template #title>管理员管理</template>
             </el-menu-item>

@@ -74,11 +74,18 @@
               type="primary"
               :disabled="scope.row.questionnaireState!=0" @click="routeLink(scope.$index, scope.row)">编辑问卷
           </el-button>
-<!--          <el-button-->
-<!--              size="mini"-->
-<!--              type="danger"-->
-<!--              @click="handleDel(scope.$index, scope.row)">删除问卷-->
-<!--          </el-button>-->
+          <el-button
+              size="mini"
+              type="primary"
+              :disabled="scope.row.questionnaireState==0"
+              @click="copy(scope.$index, scope.row)">拷贝问卷
+          </el-button>
+          <el-button
+              size="mini"
+              type="danger"
+              :disabled="scope.row.questionnaireState!=0"
+              @click="handleDel(scope.$index, scope.row)">删除问卷
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -93,9 +100,9 @@
     </el-pagination>
 
     <div>
-      <el-dialog width="35%" title="发布问卷" :visible.sync="releaseFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="发布问卷" :visible.sync="releaseFormVisible">
 
-        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules"    ref="release">
+        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" ref="release">
           <el-form-item label="发布类型" prop="publishType" :label-width="formLabelWidth">
             <el-select v-model="releaseParams.publishType" placeholder="请选择" @change="typeChange">
               <el-option label="地区" :value=0></el-option>
@@ -162,7 +169,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="添加问卷" :visible.sync="addFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="添加问卷" :visible.sync="addFormVisible">
 
         <el-form :model="questionnaires" status-icon :rules="rules" ref="questionnaires">
           <el-form-item label="问卷名称" prop="questionnaireName" :label-width="formLabelWidth">
@@ -202,7 +209,7 @@ export default {
 
 
     return {
-      userId:192386930036805,
+      userId: 192386930036805,
       classId: null,
       publishType: 2,
       areas: [],
@@ -226,10 +233,10 @@ export default {
       },
       releaseParamsRules: {
         id: [
-          {required:true,message:"请选择", trigger: 'blur'}
+          {required: true, message: "请选择", trigger: 'blur'}
         ],
         dataTime: [
-          {required:true,message:"请选择发布时间", trigger: 'blur'}
+          {required: true, message: "请选择发布时间", trigger: 'blur'}
         ],
       },
       queryParams: {
@@ -249,10 +256,10 @@ export default {
       },
       rules: {
         questionnaireName: [
-          {required:true,message:"请输入问卷名",trigger: 'blur'}
+          {required: true, message: "请输入问卷名", trigger: 'blur'}
         ],
         questionnaireIntroduction: [
-          {required:true,message:"请输入问卷介绍", trigger: 'blur'}
+          {required: true, message: "请输入问卷介绍", trigger: 'blur'}
         ],
       }
     }
@@ -267,16 +274,16 @@ export default {
     })
   },
   methods: {
-    typeChange(){
-      this.releaseParams.id=null
-      this.selectedOptions=[];
+    typeChange() {
+      this.releaseParams.id = null
+      this.selectedOptions = [];
     },
 
-    routeLink2(index,row){
-      this.$router.push({name:'questionnaireDetailsView',params: {id: row.questionnaireId}})
+    routeLink2(index, row) {
+      this.$router.push({name: 'questionnaireDetailsView', query: {id: row.questionnaireId}})
     },
-    routeLink(index,row){
-      this.$router.push({name:'questionnaireDetails',params: {id: row.questionnaireId}})
+    routeLink(index, row) {
+      this.$router.push({name: 'questionnaireDetails', query: {id: row.questionnaireId}})
     },
     queryQuestionnaire() {
       request.get("/selectQuestionnaire", this.queryParams).then(res => {
@@ -301,9 +308,8 @@ export default {
       })
     },
     handleChange(arr) {
-      console.log(arr)
       if (this.releaseParams.publishType == 2) {
-        this.releaseParams.id=arr[1]
+        this.releaseParams.id = arr[1]
       } else {
         this.queryStudents(arr[1])
       }
@@ -383,6 +389,11 @@ export default {
         }
       });
     },
+    copy(index, row) {
+      request.post("/copy", null, {"questionnaireId": row.questionnaireId}).then(res => {
+        this.queryQuestionnaire();
+      })
+    }
   }
 }
 </script>

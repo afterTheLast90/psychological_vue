@@ -1,7 +1,7 @@
 <template>
   <div>
 
-    <el-dialog title="注册账号" :visible.sync="register" width="85%" top="15px">
+    <el-dialog  :close-on-click-modal="false" title="注册账号" :visible.sync="register" width="85%" top="15px">
       <el-form :model="registerForm" :rules="registerFormRules" ref="registerForm">
         <el-form-item label="姓名" prop="userName">
           <el-input v-model="registerForm.userName" autocomplete="off"></el-input>
@@ -70,6 +70,8 @@
 <!--    </el-dialog>-->
 
     <el-form style="width: 300px" ref="loginForm" :model="form" :rules="rules" label-width="60px" class="login-box">
+
+<!--          <el-button align="right" type="info" size="mini" icon="el-icon-search">管理员入口</el-button>-->
       <h3 class="login-title">欢迎登录</h3>
       <el-form-item label="账号" prop="username">
         <el-input type="text" placeholder="请输入账号" v-model="form.username"/>

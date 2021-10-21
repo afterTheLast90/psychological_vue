@@ -17,7 +17,7 @@ export default {
 
   },
   mounted() {
-      this.userQuestionnaireId = this.$route.params.id
+      this.userQuestionnaireId = this.$route.query.id
     request.get("/getLastResult",{
       "userQuestionnaireId":this.userQuestionnaireId
     }).then(res=>{

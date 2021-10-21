@@ -5,11 +5,8 @@
       <el-col style="padding-left: 0px; padding-right: 0px" :span="2">
         <h2>学生管理</h2>
       </el-col>
-      <el-col style="padding-left: 0px; padding-right: 0px" :span="20">
+      <el-col style="padding-left: 0px; padding-right: 0px" :span="22">
         <el-button plain style="float: right;" @click="addStudent">添加学生</el-button>
-      </el-col>
-      <el-col style="padding-left: 0px; padding-right: 0px" :span="2">
-        <el-button plain style="float: right;" @click="addParent">添加家长</el-button>
       </el-col>
     </el-row>
 
@@ -142,70 +139,60 @@
     </el-pagination>
 
 
+    <el-dialog :close-on-click-modal="false" title="添加学生" :visible.sync="addFormVisible" width="35%" top="15px">
+      <el-form :model="registerForm" :rules="registerFormRules" ref="registerForm">
+        <el-form-item label="姓名" prop="userName">
+          <el-input v-model="registerForm.userName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" prop="userGender">
+          <el-select v-model="registerForm.userGender"
+                     style="width: 100%">
+            <el-option :value="1" label="男">男</el-option>
+            <el-option :value="0" label="女">女</el-option>
+          </el-select>
+          <!--          <el-input v-model="registerForm.userGender" autocomplete="off"></el-input>-->
+        </el-form-item>
+        <el-form-item label="账号" prop="account">
+          <el-input v-model="registerForm.account" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="registerForm.password" autocomplete="off" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="确认密码" prop="rePassword">
+          <el-input v-model="registerForm.rePassword" autocomplete="off" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="出生日期" prop="userBirthday">
+          <el-date-picker
+              style="width: 100%"
+              v-model="registerForm.userBirthday"
+              format="yyyy-MM-dd"
+              value-format="yyyy-MM-dd"
+              type="date"
+              placeholder="选择日期">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="班级" prop="classId">
+          <el-cascader
+              style="width: 100%"
+              v-model="selectedOptions"
+              :options="options"
+              @change="handleChange"></el-cascader>
+        </el-form-item>
+        <el-form-item label="家长姓名" prop="parentName">
+          <el-input v-model="registerForm.parentName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="家长手机号" prop="parentPhone">
+          <br>
+          <el-input v-model="registerForm.parentPhone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addFormVisible=!addFormVisible">取 消</el-button>
+        <el-button type="primary" @click="registerAccount('registerForm')">确 定</el-button>
+      </div>
+    </el-dialog>
     <div>
-      <el-dialog width="35%" title="添加学生" :visible.sync="addFormVisible">
-
-        <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
-          <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
-            <el-input v-model="user.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
-            <el-input v-model="user.account" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
-            <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
-          </el-form-item>
-          <el-form-item label="确认密码" prop="check_password" :label-width="formLabelWidth">
-            <el-input type="password" v-model="user.check_password" autocomplete="off" show-password></el-input>
-          </el-form-item>
-          <el-row style="margin-left: 0px; margin-right: 0px">
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
-                <el-select v-model="user.gender" placeholder="男/女">
-                  <el-option label="男" value="男"></el-option>
-                  <el-option label="女" value="女"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
-            <el-input v-model="user.phone_number" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="班级" prop="classId" :label-width="formLabelWidth">
-            <el-cascader
-                v-model="selectedOptions"
-                :options="options"
-                @change="handleChange"></el-cascader>
-          </el-form-item>
-          <el-form-item label="家长" prop="parentId" :label-width="formLabelWidth">
-            <el-select v-model="user.parentId" placeholder="请选择家长">
-              <el-option
-                  v-for="item in parent"
-                  :key="item.parentId"
-                  :label="item.parentName"
-                  :value="item.parentId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addStudentSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <div>
-      <el-dialog width="35%" title="编辑学生" :visible.sync="editFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="编辑学生" :visible.sync="editFormVisible">
 
         <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
@@ -242,13 +229,13 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
+          <el-button @click="editFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="editStudentSubmit">提 交</el-button>
         </div>
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="加入班级" :visible.sync="editClassFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="加入班级" :visible.sync="editClassFormVisible">
         <el-form>
           <el-form-item label="班级" prop="name" :label-width="formLabelWidth">
             <el-cascader
@@ -259,34 +246,72 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
+          <el-button @click="editClassFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>
         </div>
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="更改家长" :visible.sync="editParentFormVisible">
-        <el-form>
-          <el-form-item label="家长" prop="name" :label-width="formLabelWidth">
-            <el-select v-model="parentId" placeholder="请选择家长">
-              <el-option
-                  v-for="item in parent"
-                  :key="item.parentId"
-                  :label="item.parentName"
-                  :value="item.parentId">
-              </el-option>
-            </el-select>
+      <el-dialog :close-on-click-modal="false" width="35%" title="更改家长" :visible.sync="editParentFormVisible">
+        <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
+          <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
+            <el-input v-model="user.name" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
+            <el-input v-model="user.account" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
+            <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
+          </el-form-item>
+          <el-row style="margin-left: 0px; margin-right: 0px">
+            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
+              <el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
+                <el-select v-model="user.gender" placeholder="男/女">
+                  <el-option label="男" value="男"></el-option>
+                  <el-option label="女" value="女"></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
+              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
+                <el-date-picker
+                    v-model="user.birthday"
+                    type="date"
+                    placeholder="选择日期">
+                </el-date-picker>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
+            <el-input v-model="user.phone_number" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="formLabelWidth = false">取 消</el-button>
-          <el-button type="primary" @click="editParentSubmit">提 交</el-button>
+          <el-button @click="editFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editStudentSubmit">提 交</el-button>
         </div>
+<!--        <el-form>-->
+<!--          <el-form-item label="家长" prop="name" :label-width="formLabelWidth">-->
+<!--            <el-select v-model="parentId" placeholder="请选择家长">-->
+<!--              <el-option-->
+<!--                  v-for="item in parent"-->
+<!--                  :key="item.parentId"-->
+<!--                  :label="item.parentName"-->
+<!--                  :value="item.parentId">-->
+<!--              </el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <div slot="footer" class="dialog-footer">-->
+<!--          <el-button @click="resetForm">重 置</el-button>-->
+<!--          <el-button @click="formLabelWidth = false">取 消</el-button>-->
+<!--          <el-button type="primary" @click="editParentSubmit">提 交</el-button>-->
+<!--        </div>-->
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="退出班级" :visible.sync="delClassFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="退出班级" :visible.sync="delClassFormVisible">
         <el-form>
           <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
             <el-select v-model="aClassId">
@@ -306,52 +331,7 @@
         </div>
       </el-dialog>
     </div>
-    <div>
-      <el-dialog width="35%" title="添加家长" :visible.sync="addParentFormVisible">
 
-        <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
-          <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
-            <el-input v-model="user.name" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
-            <el-input v-model="user.account" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
-            <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
-          </el-form-item>
-          <el-form-item label="确认密码" prop="check_password" :label-width="formLabelWidth">
-            <el-input type="password" v-model="user.check_password" autocomplete="off" show-password></el-input>
-          </el-form-item>
-          <el-row style="margin-left: 0px; margin-right: 0px">
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
-                <el-select v-model="user.gender" placeholder="男/女">
-                  <el-option label="男" value="男"></el-option>
-                  <el-option label="女" value="女"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
-          <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
-            <el-input v-model="user.phone_number" autocomplete="off"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addParentFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addParentStudentSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
   </div>
 </template>
 <script>
@@ -419,6 +399,47 @@ export default {
       }
     };
     return {
+
+      registerForm: {
+        account: "",
+        password: "",
+        userGender: 1,
+        userBirthday: "",
+        userName: "",
+        rePassword: "",
+        classId: "",
+        parentName: "",
+        parentPhone: ""
+      },
+      registerFormRules: {
+        account: [
+          {required: true, message: '账号不可为空', trigger: 'blur'}
+        ],
+        password: [
+          {required: true, message: '密码不可为空', trigger: 'blur'}
+        ],
+        userGender: [
+          {required: true, message: '性别不可为空', trigger: 'blur'}
+        ],
+        userBirthday: [
+          {required: true, message: '生日不可为空', trigger: 'blur'}
+        ],
+        userName: [
+          {required: true, message: '姓名不可为空', trigger: 'blur'}
+        ],
+        rePassword: [
+          {required: true, message: '重复密码不可为空', trigger: 'blur'}
+        ],
+        classId: [
+          {required: true, message: '班级id不可为空', trigger: 'blur'}
+        ],
+        parentName: [
+          {required: true, message: '父母姓名不可为空', trigger: 'blur'}
+        ],
+        parentPhone: [
+          {required: true, message: '父母手机号不可为空', trigger: 'blur'}
+        ],
+      },
       parentId: null,
       students: [],
       options: [],
@@ -538,33 +559,9 @@ export default {
       this.value = "";
       this.resetForm();
     },
-    addStudentSubmit() {
-      this.$refs["user"].validate((valid) => {
-        if (valid) {
-          this.addFormVisible = false;
-          request.post("/addStudent", {
-            "userId": 111,
-            "userAccount": this.user.account,
-            "userBirthday": this.user.birthday,
-            "userGender": this.user.gender === "男" ? 1 : 0,
-            "userName": this.user.name,
-            "userPassword": this.user.password,
-            "userPhoneNumber": this.user.phone_number
-          }, {
-            parentId:this.user.parentId,
-            classId: this.user.classId,
-          }).then(res => {
-            this.queryUsers();
-            this.editFormVisible = false
-          })
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
-    },
     handleChange(arr) {
       this.user.classId = arr[1];
+      this.registerForm.classId=arr[1];
     },
     handleDisable(index, row) {
       console.log(row.state)
@@ -653,43 +650,10 @@ export default {
       this.queryParams.classId = this.user.classId;
       this.queryUsers();
     },
-    addParent(index, row) {
-      this.addParentFormVisible = true;
-      this.user.name = "";
-      this.user.account = "";
-      this.user.password = "";
-      this.user.check_password = "";
-      this.user.gender = "";
-      this.user.phone_number = "";
-      this.user.birthday = null;
-      this.resetForm();
-    },
     handleAddParent(index, row) {
       this.editParentFormVisible = true;
       this.studentId = row.userId;
       this.resetForm();
-    },
-    addParentStudentSubmit() {
-      this.$refs["user"].validate((valid) => {
-        if (valid) {
-          request.post("/addParent", {
-            "userId": 111,
-            "userAccount": this.user.account,
-            "userBirthday": this.user.birthday,
-            "userGender": this.user.gender === "男" ? 1 : 0,
-            "userName": this.user.name,
-            "userPassword": this.user.password,
-            "userPhoneNumber": this.user.phone_number
-          }).then(res => {
-            this.queryUsers();
-            this.queryParent();
-            this.addParentFormVisible = false;
-          })
-        } else {
-          console.log('error submit!!');
-          return false;
-        }
-      });
     },
     editParentSubmit() {
       request.post("/modifyParent",null,{
@@ -699,7 +663,19 @@ export default {
         this.queryUsers()
         this.editParentFormVisible=false
       })
-    }
+    },
+    registerAccount(registerForm) {
+      this.$refs[registerForm].validate((valid) => {
+        if (valid) {
+          request.post("/register", this.registerForm).then(res => {
+            this.register = false;
+          });
+        } else {
+          return false;
+        }
+      })
+
+    },
   }
 }
 </script>

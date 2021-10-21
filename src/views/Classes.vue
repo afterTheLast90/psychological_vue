@@ -101,7 +101,7 @@
     </el-pagination>
 
     <div>
-      <el-dialog width="35%" title="添加班级" :visible.sync="addFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="添加班级" :visible.sync="addFormVisible">
 
         <el-form :model="class1" status-icon :rules="rules" class="class1" ref="class1">
           <el-row style="margin-left: 0px; margin-right: 0px">
@@ -145,7 +145,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="修改班级" :visible.sync="editFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="修改班级" :visible.sync="editFormVisible">
 
         <el-form :model="class1" status-icon :rules="rules" class="class1" ref="class1">
           <el-row style="margin-left: 0px; margin-right: 0px">
@@ -217,6 +217,8 @@ export default {
     let validateGrade = (rule, value, callback) => {
       if (value === null) {
         callback(new Error('年级不能为空'))
+      }else if(!/^\d+$/.test(value)){
+        callback(new Error("年级为整数"))
       }
       callback();
     };

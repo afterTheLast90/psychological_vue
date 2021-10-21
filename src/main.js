@@ -9,7 +9,7 @@ import 'jquery'
 
 Vue.use(ElementUI)
 Vue.config.productionTip = false
-
+Vue.config.devtools = true
 new Vue({
   router,
   store,

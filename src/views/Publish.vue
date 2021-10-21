@@ -53,6 +53,12 @@
               size="mini"
               type="primary"
               :disabled="scope.row.state===1"
+              @click="exportResult(scope.$index, scope.row)">导出结果
+          </el-button>
+          <el-button
+              size="mini"
+              type="primary"
+              :disabled="scope.row.state===1"
               @click="handleResult(scope.$index, scope.row)">查看结果
           </el-button>
           <el-button
@@ -75,7 +81,7 @@
     </el-pagination>
 
 
-    <el-dialog width="35%" title="结果列表" :visible.sync="editResultFormVisible">
+    <el-dialog  width="35%" title="结果列表" :visible.sync="editResultFormVisible">
 
       <el-table
           :data="result"
@@ -200,7 +206,15 @@ export default {
         "publishId":row.publish.publishId
       }).then(res=>{
         this.queryPublish()
-        console.log("asfdasfdasf")
+      })
+    },
+    exportResult(index,row){
+      // request.download("/export",null)
+      console.log(12312)
+      request.download("/export",null,{
+        "publishId":row.publish.publishId
+      }).then(res=>{
+        this.queryPublish()
       })
     }
   },

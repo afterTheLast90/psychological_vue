@@ -54,14 +54,14 @@
           <span style="margin-left: 10px">{{ scope.row.userAccount }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-          label="年龄"
-          width="180">
-        <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.age }}</span>
-        </template>
-      </el-table-column>
+<!--      <el-table-column-->
+<!--          label="年龄"-->
+<!--          width="180">-->
+<!--        <template #default="scope">-->
+<!--          <i class="el-icon-time"></i>-->
+<!--          <span style="margin-left: 10px">{{ scope.row.age }}</span>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
       <el-table-column
           label="手机号"
           width="180">
@@ -120,7 +120,7 @@
     </el-pagination>
 
     <div>
-      <el-dialog width="35%" title="添加管理员" :visible.sync="addFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="添加管理员" :visible.sync="addFormVisible">
 
         <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
@@ -144,15 +144,15 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
+<!--            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">-->
+<!--              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">-->
+<!--                <el-date-picker-->
+<!--                    v-model="user.birthday"-->
+<!--                    type="date"-->
+<!--                    placeholder="选择日期">-->
+<!--                </el-date-picker>-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
           </el-row>
           <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
             <el-input v-model="user.phone_number" autocomplete="off"></el-input>
@@ -166,7 +166,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="编辑管理员" :visible.sync="editFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="编辑管理员" :visible.sync="editFormVisible">
 
         <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
@@ -187,15 +187,15 @@
                 </el-select>
               </el-form-item>
             </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
+<!--            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">-->
+<!--              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">-->
+<!--                <el-date-picker-->
+<!--                    v-model="user.birthday"-->
+<!--                    type="date"-->
+<!--                    placeholder="选择日期">-->
+<!--                </el-date-picker>-->
+<!--              </el-form-item>-->
+<!--            </el-col>-->
           </el-row>
           <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
             <el-input v-model="user.phone_number" autocomplete="off"></el-input>
@@ -394,6 +394,7 @@ export default {
       this.resetForm();
     },
     addAdministratorSubmit() {
+      this.user.birthday=new Date();
       this.$refs["user"].validate((valid) => {
         if (valid) {
           this.addFormVisible = false;
@@ -415,6 +416,7 @@ export default {
       });
     },
     editAdministratorSubmit() {
+      this.user.birthday=new Date();
       this.$refs["user"].validate((valid) => {
         if (valid) {
           this.addFormVisible = false;

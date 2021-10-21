@@ -67,11 +67,27 @@
         <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaireForm" :key="index"
                  status-icon class="questionnaireForm"
                  ref="questionnaireForm" label-width="90px">
-          <el-form-item align="left" label="题号">
-            <span>{{ item.titleId }}</span>
+          <el-form-item align="left" label="题号">{{ "题目" + (index + 1) }}
           </el-form-item>
           <el-form-item align="left" label="题目">
-            <el-input input type="textarea" v-model="item.question" :label-width="formLabelWidth"></el-input>
+            <el-button @click="changeQquestioType(item)">更改题目类型</el-button>
+          </el-form-item>
+          <el-form-item align="left">
+            <el-input v-if="!item.questionType" input type="textarea" v-model="item.question"
+                      :label-width="formLabelWidth"></el-input>
+            <el-upload
+                v-if="item.questionType"
+                :limit="1"
+                class="upload-demo"
+                :action= url
+                :file-list="item.question===null||item.question===''?[]:[{name: item.question.substring(21), url:  getUrl(item.question)}]"
+                list-type="picture"
+                :on-remove="(res,file)=>{handleRemove(item)}"
+                :on-success="(res,file)=>{handleAvatarSuccess(item,res,file)}"
+                :before-upload="beforeAvatarUpload">
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip">只能上传jpg文件，且不超过2M</div>
+            </el-upload>
           </el-form-item>
           <el-form-item align="left" label="选项类型" prop="resource">
             <el-radio-group v-model="item.chooseType">
@@ -99,6 +115,7 @@
           <el-form-item align="left" label="选项">
             <el-button @click="addOptions(item)">添加选项</el-button>
             <el-button @click="negate(item)">反向取分</el-button>
+            <el-button @click="changeOptionType(item.answerOptions)">更改选项类型</el-button>
             <el-table
                 :data="item.answerOptions"
                 style="width: 80%">
@@ -113,8 +130,20 @@
                   label="选项内容"
                   width="180">
                 <template #default="scope">
-                  <el-input v-model="scope.row.optionContent" placeholder="请输入内容">
-                  </el-input>
+                  <el-input v-model="scope.row.optionContent" placeholder="请输入内容"
+                            v-if="!scope.row.optionType"></el-input>
+                  <el-upload
+                      v-if="scope.row.optionType"
+                      :limit="1"
+                      class="upload-demo"
+                      :action= url
+                      :on-remove="(res,file)=>{handleRemoveOption(scope.row)}"
+                      :on-success="(res,file)=>{handleAvatarSuccessOption(scope.row,res,file)}"
+                      :file-list="scope.row.optionContent===null||scope.row.optionContent===''?[]:[{name: scope.row.optionContent.substring(21), url: getUrl(scope.row.optionContent)}]"
+                      :before-upload="beforeAvatarUpload">
+                    <el-button size="small" type="primary">点击上传</el-button>
+                    <div slot="tip" class="el-upload__tip">只能上传jpg文件，且不超过2M</div>
+                  </el-upload>
                 </template>
               </el-table-column>
               <el-table-column
@@ -271,6 +300,7 @@ import {Message} from "element-ui";
 export default {
   data() {
     return {
+      url:request.baseUrl+"/upload/avatar",
       questionnaireRule: {},
       options: [{
         value: 0,
@@ -307,7 +337,7 @@ export default {
         creator: null,
         submissionNumber: null,
         topicTemplate: [],
-      }
+      },
     }
   },
   watch: {
@@ -327,6 +357,44 @@ export default {
     }
   },
   methods: {
+    getUrl(url){
+      return request.baseUrl+url;
+    },
+    changeQquestioType(item){
+      item.questionType=!item.questionType;
+      item.question="";
+    },
+    handleRemove(item){
+      item.question=""
+    },
+    handleRemoveOption(row){
+      row.optionContent=""
+    },
+    handleAvatarSuccess(item, res, file) {
+      item.question = res.data
+    },
+    handleAvatarSuccessOption(row, res, file) {
+      row.optionContent = res.data
+    },
+    changeOptionType(answerOptions) {
+      let type = answerOptions[0].optionType;
+      answerOptions.forEach(function (s) {
+        s.optionContent=""
+        s.optionType = !type;
+      })
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
     changeCalculation() {
       if (this.questionnaire.calculation === 1) {
         this.questionnaireForm.forEach(function (s) {
@@ -362,6 +430,7 @@ export default {
         answerOptions: [],
         chooseType: 0,
         chosePeople: 0,
+        questionType: false
       });
       this.questionnaireForm[this.questionnaireForm.length - 1].answerOptions = [].concat(JSON.parse(JSON.stringify(this.questionnaire.topicTemplate)))
     },
@@ -372,7 +441,8 @@ export default {
       this.questionnaire.topicTemplate.push({
         optionName: String.fromCharCode(this.questionnaire.topicTemplate.length + 65),
         optionPoints: 0,
-        optionContent: ""
+        optionContent: "",
+        optionType: false
       })
     },
     delTemplateOptions(index) {
@@ -394,7 +464,8 @@ export default {
       item.answerOptions.push({
         optionName: String.fromCharCode(item.answerOptions.length + 65),
         optionPoints: 0,
-        optionContent: ""
+        optionContent: "",
+        optionType: item.answerOptions[0].optionType
       })
     },
     remove(item) {
@@ -494,19 +565,21 @@ export default {
       })
     },
     questionnaireSubmit() {
-      let arr = document.querySelectorAll('input')
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].value === '') {
-          this.$message("请检查");
-          return;
+      let that=this;
+      let flag=false;
+      this.questionnaireForm.forEach(function (s) {
+        if (s.question===""||s.question===null){
+          flag=true
         }
-      }
-      arr = document.querySelectorAll('textarea')
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i].value === '') {
-          this.$message("请检查");
-          return;
-        }
+        s.answerOptions.forEach(function (b){
+          if (b.optionContent===""||b.optionContent===null){
+            flag=true
+          }
+        })
+      })
+      if(flag){
+        that.$message("请检查");
+        return;
       }
 
       if (this.questionnaire.calculation === 1) {
@@ -525,7 +598,7 @@ export default {
   },
   mounted() {
     let that = this;
-    this.id = this.$route.params.id
+    this.id = this.$route.query.id
     request.get("/questions", {"id": this.id}).then(res => {
       this.questionnaireForm = res.data;
       this.questionnaireForm.forEach(function (s, num) {

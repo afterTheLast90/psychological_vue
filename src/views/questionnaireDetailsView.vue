@@ -1,212 +1,267 @@
 <template>
   <div>
+    <div>
+      <el-form label-position="left" style="width: 80%" v-model="questionnaire" status-icon class="questionnaire"
+               ref="questionnaire" label-width="90px">
+        <el-form-item align="left" label="问卷名称" prop="questionnarieName">
+          <el-input v-model="questionnaire.questionnaireName" :label-width="formLabelWidth"></el-input>
+        </el-form-item>
+        <el-form-item align="left" label="问卷简介" prop="questionnaireIntroduction">
+          <el-input input type="textarea" v-model="questionnaire.questionnaireIntroduction"
+                    :label-width="formLabelWidth"></el-input>
+        </el-form-item>
+        <el-form-item align="left" label="计算方式">
+          <el-select v-model="questionnaire.calculation" placeholder="请选择" @change="changeCalculation">
+            <el-option label="因子" :value="0"></el-option>
+            <el-option label="总分" :value="1"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item align="left" label="因子个数" v-if="questionnaire.calculation===0">
+          <el-input-number v-model="factorNum" :min="1" :max="10" label="描述文字"></el-input-number>
+        </el-form-item>
+        <el-form-item align="left" label="模板">
+          <el-table
+              :data="questionnaire.topicTemplate"
+              style="width: 80%">
+            <el-table-column
+                label="ID"
+                width="50">
+              <template #default="scope">
+                <span>{{ scope.row.optionName }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+                label="选项内容"
+                width="180">
+              <template #default="scope">
+                <el-input v-model="scope.row.optionContent" placeholder="请输入内容">
+                </el-input>
+              </template>
+            </el-table-column>
+            <el-table-column
+                label="分值"
+                width="190">
+              <template #default="scope">
+                <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+      </el-form>
+    </div>
+    <span>题目</span>
+    <el-divider></el-divider>
+    <div>
       <div>
-        <el-form label-position="left" style="width: 80%" v-model="questionnaire" status-icon class="questionnaire"
-                 ref="questionnaire" label-width="90px">
-          <el-form-item align="left" label="问卷名称">
-            <el-input v-model="questionnaire.questionnaireName" :label-width="formLabelWidth"></el-input>
+        <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaireForm" :key="index"
+                 status-icon class="questionnaireForm"
+                 ref="questionnaireForm" label-width="90px">
+          <el-form-item align="left" label="题号">{{ "题目" + (index + 1) }}
           </el-form-item>
-          <el-form-item align="left" label="问卷简介">
-            <el-input input type="textarea" v-model="questionnaire.questionnaireIntroduction"
+          <el-form-item align="left" label="题目">
+          </el-form-item>
+          <el-form-item align="left">
+            <el-input v-if="!item.questionType" input type="textarea" v-model="item.question"
                       :label-width="formLabelWidth"></el-input>
+            <el-upload
+                v-if="item.questionType"
+                :limit="1"
+                class="upload-demo"
+                :action= url
+                :file-list="item.question===null||item.question===''?[]:[{name: item.question.substring(21), url: getUrl(item.question)}]"
+                list-type="picture"
+                :before-upload="beforeAvatarUpload">
+            </el-upload>
           </el-form-item>
-          <el-form-item align="left" label="计算方式">
-            {{questionnaire.calculation==0?"因子":"总分"}}
+          <el-form-item align="left" label="选项类型" prop="resource">
+            <el-radio-group v-model="item.chooseType">
+              <el-radio :label="0">单选</el-radio>
+              <el-radio :label="1">多选</el-radio>
+            </el-radio-group>
           </el-form-item>
-          <el-form-item align="left" label="因子个数" v-if="questionnaire.calculation===0" >
-            <el-input-number v-model="factorNum" :min="1" :max="10" label="描述文字" :disabled="true"></el-input-number>
+          <el-form-item align="left" label="填写对象" prop="resource">
+            <el-radio-group v-model="item.chosePeople">
+              <el-radio :label="0">学生</el-radio>
+              <el-radio :label="1">家长</el-radio>
+              <el-radio :label="2">教师</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item align="left" label="因子" prop="resource" v-if="questionnaire.calculation===0">
+            <el-select v-model="item.factorGroupId" placeholder="请选择因子">
+              <el-option
+                  v-for="factor in factors"
+                  :key="factor.value"
+                  :label="factor.label"
+                  :value="factor.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item align="left" label="选项">
+            <el-table
+                :data="item.answerOptions"
+                style="width: 80%">
+              <el-table-column
+                  label="ID"
+                  width="50">
+                <template #default="scope">
+                  <span>{{ scope.row.optionName }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                  label="选项内容"
+                  width="180">
+                <template #default="scope">
+                  <el-input v-model="scope.row.optionContent" placeholder="请输入内容"
+                            v-if="!scope.row.optionType"></el-input>
+                  <el-upload
+                      v-if="scope.row.optionType"
+                      :limit="1"
+                      class="upload-demo"
+                      :action= url
+                      :on-remove="(res,file)=>{handleRemoveOption(scope.row)}"
+                      :on-success="(res,file)=>{handleAvatarSuccessOption(scope.row,res,file)}"
+                      :file-list="scope.row.optionContent===null||scope.row.optionContent===''?[]:[{name: scope.row.optionContent.substring(21), url: getUrl(scope.row.optionContent)}]"
+                      :before-upload="beforeAvatarUpload">
+                  </el-upload>
+                </template>
+              </el-table-column>
+              <el-table-column
+                  label="分值"
+                  width="190">
+                <template #default="scope">
+                  <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
+                </template>
+              </el-table-column>
+            </el-table>
           </el-form-item>
         </el-form>
       </div>
-      <span>题目</span>
+    </div>
+    <div v-if="this.questionnaire.calculation === 0">
+      <span>变量</span>
       <el-divider></el-divider>
       <div>
-        <div>
-          <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaireForm" :key="index"
-                   status-icon class="questionnaireForm"
-                   ref="questionnaireForm" label-width="90px">
-            <el-form-item align="left" label="题号">
-              <span>{{ item.titleId }}</span>
-            </el-form-item>
-            <el-form-item align="left" label="题目">
-              <el-input input type="textarea" v-model="item.question" :label-width="formLabelWidth" ></el-input>
-            </el-form-item>
-            <el-form-item align="left" label="选项类型" prop="resource">
-              <el-radio-group v-model="item.chooseType">
-                <el-radio :label="0">单选</el-radio>
-                <el-radio :label="1">多选</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item align="left" label="填写对象" prop="resource">
-              <el-radio-group v-model="item.chosePeople">
-                <el-radio :label="0">学生</el-radio>
-                <el-radio :label="1">家长</el-radio>
-                <el-radio :label="2">教师</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item align="left" label="因子" prop="resource" v-if="questionnaire.calculation===0">
-              <el-select v-model="item.factorGroupId" placeholder="请选择因子">
-                <el-option
-                    v-for="factor in factors"
-                    :key="factor.value"
-                    :label="factor.label"
-                    :value="factor.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item align="left" label="选项">
-              <el-table
-                  :data="item.answerOptions"
-                  style="width: 80%">
-                <el-table-column
-                    label="ID"
-                    width="50">
-                  <template #default="scope">
-                    <span>{{ scope.row.optionName }}</span>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                    label="选项内容"
-                    width="180">
-                  <template #default="scope">
-                    <el-input v-model="scope.row.optionContent" placeholder="请输入内容">
-                    </el-input>
-                  </template>
-                </el-table-column>
-                <el-table-column
-                    label="分值"
-                    width="190">
-                  <template #default="scope">
-                    <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </el-form-item>
-          </el-form>
-        </div>
-      </div>
-      <div v-if="this.questionnaire.calculation === 0">
-        <span>变量</span>
-        <el-divider></el-divider>
-        <div>
-          <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaire.variables" :key="index"
-                   status-icon class="questionnaireForm"
-                   :ref="questionnaireForm" label-width="90px">
-            <el-form-item align="left" label="变量序号">
-              <span>{{ '变量' + item.id }}</span>
-            </el-form-item>
-            <el-form-item align="left" label="变量名称">
-              <el-input v-model="item.name" :label-width="formLabelWidth"></el-input>
-            </el-form-item>
-            <el-form-item align="left" label="变量简介">
-              <el-input input type="textarea" v-model="item.introduction" :label-width="formLabelWidth"></el-input>
-            </el-form-item>
-            <el-form-item align="left" label="计算方式">
-              <el-select v-model="item.type" placeholder="请选择" @change="factorChange(item.factor)" :disabled="true">
-                <el-option label="求和" :value="0"></el-option>
-                <el-option label="求平均" :value="1"></el-option>
-                <el-option label="求个数" :value="2"></el-option>
-                <el-option label="常量" :value="3"></el-option>
-                <el-option label="表达式" :value="4" v-if="item.id!==1"></el-option>
-
-              </el-select>
-            </el-form-item>
-            <el-form-item align="left" label="因子" v-if="item.type!==4&&item.type!==3">
-              <el-select v-model="item.factor" placeholder="请选择因子" @change="factorChange(item.factor)">
-                <el-option
-                    v-for="factor in factors"
-                    :key="factor.value"
-                    :label="factor.label"
-                    :value="factor.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item align="left" label="常量" v-if="item.type===3">
-              <el-input-number v-model="item.constant" :min="1" :max="100" label="常量"></el-input-number>
-            </el-form-item>
-            <el-form-item align="left" label="选项" v-if="item.type===2">
-              <el-select v-model="item.option" placeholder="请选择选项">
-                <el-option
-                    v-for="opt in opts"
-                    :key="opt.label"
-                    :label="opt.label"
-                    :value="opt.label">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item align="left" label="选择范围" v-if="item.type===4">
-              <el-select v-modele="item.operation1" placeholder="请选择变量">
-                <el-option
-                    v-for="variable in questionnaire.variables"
-                    :key="variable.id"
-                    :label="variable.name?variable.name:'变量'+variable.id"
-                    :value="variable.id"
-                    v-if="variable.id<item.id">
-                </el-option>
-              </el-select>
-              <el-select v-model="item.operation" placeholder="请选择运算方式">
-                <el-option key="+" value="+"></el-option>
-                <el-option key="-" value="-"></el-option>
-                <el-option key="*" value="*"></el-option>
-                <el-option key="/" value="/"></el-option>
-              </el-select>
-              <el-select v-model="item.operation2" placeholder="请选择变量">
-                <el-option
-                    v-for="variable in questionnaire.variables"
-                    :key="variable.id"
-                    :label="variable.name?variable.name:'变量'+variable.id"
-                    :value="variable.id"
-                    v-if="variable.id<item.id">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-        </div>
-      </div>
-      <span>结果</span>
-      <el-divider></el-divider>
-      <div>
-        <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaire.results" :key="index"
+        <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaire.variables" :key="index"
                  status-icon class="questionnaireForm"
-                 ref="questionnaireForm" label-width="90px">
-          <el-form-item align="left" label="结果序号">
-            <span>{{ '结果' + item.id }}</span>
+                 :ref="questionnaireForm" label-width="90px">
+          <el-form-item align="left" label="变量序号">
+            <span>{{ '变量' + item.id }}</span>
           </el-form-item>
-          <el-form-item align="left" label="结果名称">
+          <el-form-item align="left" label="变量名称">
             <el-input v-model="item.name" :label-width="formLabelWidth"></el-input>
           </el-form-item>
-          <el-form-item align="left" label="结果介绍">
+          <el-form-item align="left" label="变量简介">
             <el-input input type="textarea" v-model="item.introduction" :label-width="formLabelWidth"></el-input>
           </el-form-item>
-          <el-form-item v-for="(condition,index2) in item.conditions" :key="index2" align="left" label="条件列表">
-            <span>{{ '条件' + (index2+1) }}</span>
-            <el-select v-model="condition.variable" placeholder="请选择变量">
+          <el-form-item align="left" label="计算方式">
+            <el-select v-model="item.type" placeholder="请选择" @change="factorChange(item.factor)">
+              <el-option label="求和" :value="0"></el-option>
+              <el-option label="求平均" :value="1"></el-option>
+              <el-option label="求个数" :value="2"></el-option>
+              <el-option label="常量" :value="3"></el-option>
+              <el-option label="表达式" :value="4" v-if="item.id!==1"></el-option>
+
+            </el-select>
+          </el-form-item>
+          <el-form-item align="left" label="因子" v-if="item.type!==4&&item.type!==3">
+            <el-select v-model="item.factor" placeholder="请选择因子" @change="factorChange(item.factor)">
+              <el-option
+                  v-for="factor in factors"
+                  :key="factor.value"
+                  :label="factor.label"
+                  :value="factor.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item align="left" label="常量" v-if="item.type===3">
+            <el-input-number v-model="item.constant" :min="1" :max="100" label="常量"></el-input-number>
+          </el-form-item>
+          <el-form-item align="left" label="选项" v-if="item.type===2">
+            <el-select v-model="item.option" placeholder="请选择选项">
+              <el-option
+                  v-for="opt in opts"
+                  :key="opt.label"
+                  :label="opt.label"
+                  :value="opt.label">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item align="left" label="选择范围" v-if="item.type===4">
+            <el-select v-modele="item.operation1" placeholder="请选择变量">
               <el-option
                   v-for="variable in questionnaire.variables"
                   :key="variable.id"
                   :label="variable.name?variable.name:'变量'+variable.id"
-                  :value="variable.id">
+                  :value="variable.id"
+                  v-if="variable.id<item.id">
               </el-option>
             </el-select>
-            <el-select v-model="condition.type" placeholder="请选择运算方式">
-              <el-option v-for="item in options"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value"></el-option>
+            <el-select v-model="item.operation" placeholder="请选择运算方式">
+              <el-option key="+" value="+"></el-option>
+              <el-option key="-" value="-"></el-option>
+              <el-option key="*" value="*"></el-option>
+              <el-option key="/" value="/"></el-option>
             </el-select>
-            <el-input-number v-model="condition.value" :min="1" :max="100" label="值"></el-input-number>
+            <el-select v-model="item.operation2" placeholder="请选择变量">
+              <el-option
+                  v-for="variable in questionnaire.variables"
+                  :key="variable.id"
+                  :label="variable.name?variable.name:'变量'+variable.id"
+                  :value="variable.id"
+                  v-if="variable.id<item.id">
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-form>
       </div>
+    </div>
+    <span>结果</span>
+    <el-divider></el-divider>
+    <div>
+      <el-form label-position="left" style="width: 80%" v-for="(item,index) in questionnaire.results" :key="index"
+               status-icon class="questionnaireForm"
+               ref="questionnaireForm" label-width="90px">
+        <el-form-item align="left" label="结果序号">
+          <span>{{ '结果' + item.id }}</span>
+        </el-form-item>
+        <el-form-item align="left" label="结果名称">
+          <el-input v-model="item.name" :label-width="formLabelWidth"></el-input>
+        </el-form-item>
+        <el-form-item align="left" label="结果介绍">
+          <el-input input type="textarea" v-model="item.introduction" :label-width="formLabelWidth"></el-input>
+        </el-form-item>
+        <el-form-item v-for="(condition,index2) in item.conditions" :key="index2" align="left" label="条件列表">
+          <span>{{ '条件' + (index2 + 1) }}</span>
+          <el-select v-model="condition.variable" placeholder="请选择变量">
+            <el-option
+                v-for="variable in questionnaire.variables"
+                :key="variable.id"
+                :label="variable.name?variable.name:'变量'+variable.id"
+                :value="variable.id">
+            </el-option>
+          </el-select>
+          <el-select v-model="condition.type" placeholder="请选择运算方式">
+            <el-option v-for="item in options"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value"></el-option>
+          </el-select>
+          <el-input-number v-model="condition.value" :min="1" :max="100" label="值"></el-input-number>
+        </el-form-item>
+      </el-form>
+    </div>
   </div>
 </template>
 
 <script>
 import request from "../utils/request";
+import {Message} from "element-ui";
 
 export default {
   data() {
     return {
+      url:request.baseUrl+"/upload/avatar",
+      questionnaireRule: {},
       options: [{
         value: 0,
         label: '='
@@ -242,12 +297,13 @@ export default {
         creator: null,
         submissionNumber: null,
         topicTemplate: [],
-      }
+      },
     }
   },
   watch: {
     factorNum(val, oldVal) {
       this.factors = []
+
       for (let i = 1; i <= val; i++) {
         this.factors.push({value: i, label: "因子" + i})
       }
@@ -261,12 +317,50 @@ export default {
     }
   },
   methods: {
+    getUrl(url){
+      return request.baseUrl+url;
+    },
+    changeQquestioType(item){
+      item.questionType=!item.questionType;
+      item.question="";
+    },
+    handleRemove(item){
+      item.question=""
+    },
+    handleRemoveOption(row){
+      row.optionContent=""
+    },
+    handleAvatarSuccess(item, res, file) {
+      item.question = res.data
+    },
+    handleAvatarSuccessOption(row, res, file) {
+      row.optionContent = res.data
+    },
+    changeOptionType(answerOptions) {
+      let type = answerOptions[0].optionType;
+      answerOptions.forEach(function (s) {
+        s.optionContent=""
+        s.optionType = !type;
+      })
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
     changeCalculation() {
       if (this.questionnaire.calculation === 1) {
-        this.questionnaireForm.forEach(function (s){
-          s.factorGroupId=0;
+        this.questionnaireForm.forEach(function (s) {
+          s.factorGroupId = 0;
         })
-        this.questionnaire.variables =[
+        this.questionnaire.variables = [
           {
             id: 1,
             name: "总分",
@@ -276,8 +370,16 @@ export default {
           }
         ]
       }
+      console.log(this.questionnaireForm)
     },
     addTemplate() {
+      if (!this.questionnaire.topicTemplate) {
+        Message({
+          showClose: true,
+          message: "请先设置模板选项",
+        });
+        return;
+      }
       if (!this.questionnaireForm) {
         this.questionnaireForm = []
       }
@@ -288,6 +390,7 @@ export default {
         answerOptions: [],
         chooseType: 0,
         chosePeople: 0,
+        questionType: false
       });
       this.questionnaireForm[this.questionnaireForm.length - 1].answerOptions = [].concat(JSON.parse(JSON.stringify(this.questionnaire.topicTemplate)))
     },
@@ -298,7 +401,8 @@ export default {
       this.questionnaire.topicTemplate.push({
         optionName: String.fromCharCode(this.questionnaire.topicTemplate.length + 65),
         optionPoints: 0,
-        optionContent: ""
+        optionContent: "",
+        optionType: false
       })
     },
     delTemplateOptions(index) {
@@ -320,7 +424,8 @@ export default {
       item.answerOptions.push({
         optionName: String.fromCharCode(item.answerOptions.length + 65),
         optionPoints: 0,
-        optionContent: ""
+        optionContent: "",
+        optionType: false
       })
     },
     remove(item) {
@@ -334,7 +439,7 @@ export default {
     },
     negate(item) {
       item.answerOptions.forEach(function (s) {
-        s.optionPoints = item.answerOptions.length - s.optionPoints
+        s.optionPoints = item.answerOptions.length + 1 - s.optionPoints
       })
     },
     addVariable() {
@@ -420,20 +525,45 @@ export default {
       })
     },
     questionnaireSubmit() {
-      request.post("/modifyQuestionnaire", this.questionnaire).then(res => {
+      let that=this;
+      let flag=false;
+      this.questionnaireForm.forEach(function (s) {
+        if (s.question===""||s.question===null){
+          flag=true
+        }
+        s.answerOptions.forEach(function (b){
+          if (b.optionContent===""||b.optionContent===null){
+            flag=true
+          }
+        })
       })
-      request.post("/modifyDetails", this.questionnaireForm).then(res => {
+      if(flag){
+        that.$message("请检查");
+        return;
+      }
+
+      if (this.questionnaire.calculation === 1) {
+        this.questionnaireForm.forEach(function (s) {
+          s.factorGroupId = 0;
+        })
+      }
+      request.post("/modifyQuestionnaire", this.questionnaire).then(res => {
+      }).then(res => {
+        request.post("/modifyDetails", this.questionnaireForm).then(res => {
+        }).then(res => {
+          this.$router.push({name: 'questionnaire'})
+        })
       })
     }
   },
   mounted() {
-    let that=this
-    this.id = this.$route.params.id
+    let that = this;
+    this.id = this.$route.query.id
     request.get("/questions", {"id": this.id}).then(res => {
       this.questionnaireForm = res.data;
-      this.questionnaireForm.forEach(function (s,num){
-        if(that.factorNum<s.factorGroupId){
-          that.factorNum=s.factorGroupId;
+      this.questionnaireForm.forEach(function (s, num) {
+        if (that.factorNum < s.factorGroupId) {
+          that.factorNum = s.factorGroupId;
         }
       })
     })

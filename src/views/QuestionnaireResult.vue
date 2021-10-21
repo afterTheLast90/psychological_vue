@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="question-result">
 
     <el-table
         :data="userQuestionnaire"
@@ -11,7 +11,7 @@
             <el-collapse-item :title="scope.row.questionnaireName">
               <div>发布人：{{ scope.row.publisherName }}</div>
               <div>完成时间：{{ scope.row.userQuestionnaire.updateTime }}</div>
-              <router-link :to="{name:'result',params: {id: scope.row.userQuestionnaire.userQuestionnaireId}}">
+              <router-link :to="{name:'result',query: {id: scope.row.userQuestionnaire.userQuestionnaireId}}">
                 <el-button>查看结果</el-button>
               </router-link>
             </el-collapse-item>
@@ -78,6 +78,8 @@ export default {
 
 </script>
 
-<style scoped>
-
+<style>
+  .question-result .el-collapse-item__header{
+    padding-left: 20px;
+  }
 </style>

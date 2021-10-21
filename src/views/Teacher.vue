@@ -121,7 +121,7 @@
     </el-pagination>
 
     <div>
-      <el-dialog width="35%" title="添加教师" :visible.sync="addFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="添加教师" :visible.sync="addFormVisible">
 
         <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
@@ -177,7 +177,7 @@
       </el-dialog>
     </div>
     <div>
-      <el-dialog width="35%" title="编辑教师" :visible.sync="editFormVisible">
+      <el-dialog :close-on-click-modal="false" width="35%" title="编辑教师" :visible.sync="editFormVisible">
         <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
             <el-input v-model="user.name" autocomplete="off"></el-input>
@@ -381,6 +381,7 @@ export default {
       this.resetForm();
     },
     addTeacherSubmit() {
+      this.user.birthday=new Date();
       this.$refs["user"].validate((valid) => {
         if (valid) {
           this.addFormVisible = false;

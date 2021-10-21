@@ -39,7 +39,7 @@
     </el-container>
 
     <div>
-      <el-dialog width="100%" title="加入班级" :visible.sync="editClassFormVisible" >
+      <el-dialog :close-on-click-modal="false" width="100%" title="加入班级" :visible.sync="editClassFormVisible" >
         <el-form>
           <el-form-item label="班级" prop="name" :label-width="formLabelWidth">
             <el-cascader
