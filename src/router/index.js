@@ -28,6 +28,11 @@ const routes = [
             component: () => import("../views/TopBar"),
             children: [
                 {
+                    path: "hello",
+                    name: "hello",
+                    component: () => import("../views/Hello")
+                },
+                {
                     path: "administrator",
                     name: "administrator",
                     component: () => import("../views/Administrator")

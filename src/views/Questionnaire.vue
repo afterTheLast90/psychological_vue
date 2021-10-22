@@ -41,6 +41,13 @@
         </template>
       </el-table-column>
       <el-table-column
+          label="是否乱序"
+          width="100">
+        <template #default="scope">
+          <span>{{ scope.row.orderNo?"是":"否"}}</span>
+        </template>
+      </el-table-column>
+      <el-table-column
           label="问卷状态"
           width="100">
         <template #default="scope">

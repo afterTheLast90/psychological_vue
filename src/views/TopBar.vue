@@ -8,7 +8,8 @@
             background-color="#545c64"
             text-color="#fff"
             active-text-color="#ffd04b">
-
+<!--          <el-image style="display: block;width: 3%"-->
+<!--                    :src="getUrl('/upload/logo.jpg')"></el-image>-->
           <h1 style="color: #DCDFE6" >心理测评后台管理系统</h1>
         </el-menu>
       </el-header>
@@ -38,7 +39,7 @@
               <template #title>学生管理</template>
             </el-menu-item>
             <el-menu-item index="/topBar/questionnaire" v-if="role==0 || role==1">
-              <template #title >问卷管理</template>
+              <template #title>问卷管理</template>
             </el-menu-item>
             <el-menu-item index="/topBar/publish" v-if="role==0 || role==1">
               <template #title>发布记录</template>
@@ -49,7 +50,7 @@
           <el-main>
             <router-view></router-view>
           </el-main>
-          <el-footer>Footer</el-footer>
+          <!--          <el-footer>Footer</el-footer>-->
         </el-container>
       </el-container>
     </el-container>
@@ -60,16 +61,22 @@
 
 <script>
 
-  export default {
-    data() {
-      return {
-        role : -1
-      }
-    },
-    mounted() {
-      this.role = localStorage.getItem("userRole")
+import request from "../utils/request";
+
+export default {
+  data() {
+    return {
+      role: -1
     }
+  }, methods: {
+    getUrl(url) {
+      return request.baseUrl + url;
+    },
+  },
+  mounted() {
+    this.role = localStorage.getItem("userRole")
   }
+}
 </script>
 <style>
 

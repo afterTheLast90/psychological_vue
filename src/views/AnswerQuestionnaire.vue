@@ -8,7 +8,7 @@
         <span style="width:auto; display:block; text-align:left;">
         第{{ item.index }}题：
           <span v-if="!item.questionType">{{ item.question }}</span>
-          <el-image v-if="item.questionType" style="display: block;margin: 5px 0 10px;"
+          <el-image v-if="item.questionType" style="display: block;margin: 5px 0 10px;width: 400px;"
                     :src="getUrl(item.question)"></el-image>
       </span>
         <el-checkbox-group v-model="answers[index].answer" v-if="item.chooseType===1">
@@ -69,6 +69,7 @@ export default {
   name: "AnswerQuestionnaire",
   data() {
     return {
+      orderNo:null,
       state: null,
       role: 0,
       answers: [],
@@ -88,9 +89,13 @@ export default {
     this.state = this.$route.query.state
     this.publishId = this.$route.query.publishId
     if (this.state===null){
-      console.log(11111)
       this.$router.push({name: 'beFilledWith'})
     }
+    request.get("/question",{"id":this.id}).then(res=>{
+      this.orderNo=res.data.orderNo;
+      console.log(this.orderNo)
+    })
+    console.log(this.id)
     if (this.state) {
       this.queryNewQuestionnaire();
     } else {
@@ -125,9 +130,11 @@ export default {
         for (let i = 0; i < this.questionnaire.length; i++) {
           this.answers.push({titleId: this.questionnaire[i].titleId, answer: [], score: 0})
         }
-        res = this.shuffle(this.questionnaire, this.answers);
-        this.questionnaire = res.result1;
-        this.answers = res.result2;
+        if (this.orderNo){
+          res = this.shuffle(this.questionnaire, this.answers);
+          this.questionnaire = res.result1;
+          this.answers = res.result2;
+        }
         for (let i = 0; i < this.questionnaire.length; i++) {
           if (this.questionnaire[i].chosePeople === this.role) {
             this.questionnaire[i].index = index++
@@ -144,9 +151,11 @@ export default {
             this.answers.push({titleId: this.questionnaireForm[i].titleId, answer: [], score: 0})
           }
         }
-        res = this.shuffle(this.questionnaireForm, this.answers);
-        this.questionnaireForm = res.result1;
-        this.answers = res.result2;
+        if (this.orderNo){
+          res = this.shuffle(this.questionnaireForm, this.answers);
+          this.questionnaireForm = res.result1;
+          this.answers = res.result2;
+        }
 
         for (let i = 0; i < this.questionnaireForm.length; i++) {
           if (this.questionnaireForm[i].chosePeople === this.role) {

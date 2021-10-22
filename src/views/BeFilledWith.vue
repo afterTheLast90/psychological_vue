@@ -7,7 +7,6 @@
           <div>问卷简介：{{item.questionnaireIntroduction}}</div>
           <div>时间：{{item.releaseTime+"~"+item.deadLine}}</div>
           <div>学生：{{item.studentName}}</div>
-          <div>学生：{{item.studentId}}</div>
         </div>
         <div style="text-align: center;margin-top: 20px;">
           <router-link :to="{name:'answerQuestionnaire',query: {userRole:user.users.userRole-2,id: item.questionnaireId,userId:user.users.userId,studentId:item.studentId,state:item.state,publishId:item.publishId}}">

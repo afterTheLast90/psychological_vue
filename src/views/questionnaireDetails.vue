@@ -16,6 +16,12 @@
             <el-option label="总分" :value="1"></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item align="left" label="是否乱序">
+          <el-select v-model="questionnaire.orderNo" placeholder="请选择" @change="changeCalculation">
+            <el-option label="是" :value="true"></el-option>
+            <el-option label="否" :value="false"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item align="left" label="因子个数" v-if="questionnaire.calculation===0">
           <el-input-number v-model="factorNum" :min="1" :max="10" label="描述文字"></el-input-number>
         </el-form-item>
@@ -79,7 +85,7 @@
                 v-if="item.questionType"
                 :limit="1"
                 class="upload-demo"
-                :action= url
+                :action=url
                 :file-list="item.question===null||item.question===''?[]:[{name: item.question.substring(21), url:  getUrl(item.question)}]"
                 list-type="picture"
                 :on-remove="(res,file)=>{handleRemove(item)}"
@@ -136,7 +142,7 @@
                       v-if="scope.row.optionType"
                       :limit="1"
                       class="upload-demo"
-                      :action= url
+                      :action=url
                       :on-remove="(res,file)=>{handleRemoveOption(scope.row)}"
                       :on-success="(res,file)=>{handleAvatarSuccessOption(scope.row,res,file)}"
                       :file-list="scope.row.optionContent===null||scope.row.optionContent===''?[]:[{name: scope.row.optionContent.substring(21), url: getUrl(scope.row.optionContent)}]"
@@ -150,7 +156,8 @@
                   label="分值"
                   width="190">
                 <template #default="scope">
-                  <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
+                  <el-input-number v-model="scope.row.optionPoints" :min="-item.answerOptions.length"
+                                   :max="item.answerOptions.length" label="描述文字"></el-input-number>
                 </template>
               </el-table-column>
               <el-table-column
@@ -165,6 +172,7 @@
               </el-table-column>
             </el-table>
           </el-form-item>
+          <el-button type="primary" @click="insert(item)">插入题目</el-button>
           <el-button type="danger" @click="remove(item)">移除题目</el-button>
         </el-form>
       </div>
@@ -300,7 +308,7 @@ import {Message} from "element-ui";
 export default {
   data() {
     return {
-      url:request.baseUrl+"/upload/avatar",
+      url: request.baseUrl + "/upload/avatar",
       questionnaireRule: {},
       options: [{
         value: 0,
@@ -357,18 +365,18 @@ export default {
     }
   },
   methods: {
-    getUrl(url){
-      return request.baseUrl+url;
+    getUrl(url) {
+      return request.baseUrl + url;
     },
-    changeQquestioType(item){
-      item.questionType=!item.questionType;
-      item.question="";
+    changeQquestioType(item) {
+      item.questionType = !item.questionType;
+      item.question = "";
     },
-    handleRemove(item){
-      item.question=""
+    handleRemove(item) {
+      item.question = ""
     },
-    handleRemoveOption(row){
-      row.optionContent=""
+    handleRemoveOption(row) {
+      row.optionContent = ""
     },
     handleAvatarSuccess(item, res, file) {
       item.question = res.data
@@ -379,7 +387,7 @@ export default {
     changeOptionType(answerOptions) {
       let type = answerOptions[0].optionType;
       answerOptions.forEach(function (s) {
-        s.optionContent=""
+        s.optionContent = ""
         s.optionType = !type;
       })
     },
@@ -468,6 +476,26 @@ export default {
         optionType: item.answerOptions[0].optionType
       })
     },
+    insert(item) {
+      let index = this.questionnaireForm.indexOf(item)
+      if (index !== -1) {
+        this.questionnaireForm.splice(index, 0,
+            {
+              titleId: this.questionnaireForm.length + 1,
+              questionnaireId: this.id,
+              factorGroupId: 1,
+              answerOptions: [],
+              chooseType: 0,
+              chosePeople: 0,
+              questionType: false
+            })
+        this.questionnaireForm[index].answerOptions = [].concat(JSON.parse(JSON.stringify(this.questionnaire.topicTemplate)))
+
+      }
+      this.questionnaireForm.forEach(function (s, num) {
+        s.titleId = num + 1
+      })
+    },
     remove(item) {
       let index = this.questionnaireForm.indexOf(item)
       if (index !== -1) {
@@ -479,7 +507,7 @@ export default {
     },
     negate(item) {
       item.answerOptions.forEach(function (s) {
-        s.optionPoints = item.answerOptions.length + 1 - s.optionPoints
+        s.optionPoints = s.optionPoints % item.answerOptions.length + 1
       })
     },
     addVariable() {
@@ -565,19 +593,19 @@ export default {
       })
     },
     questionnaireSubmit() {
-      let that=this;
-      let flag=false;
+      let that = this;
+      let flag = false;
       this.questionnaireForm.forEach(function (s) {
-        if (s.question===""||s.question===null){
-          flag=true
+        if (s.question === "" || s.question === null) {
+          flag = true
         }
-        s.answerOptions.forEach(function (b){
-          if (b.optionContent===""||b.optionContent===null){
-            flag=true
+        s.answerOptions.forEach(function (b) {
+          if (b.optionContent === "" || b.optionContent === null) {
+            flag = true
           }
         })
       })
-      if(flag){
+      if (flag) {
         that.$message("请检查");
         return;
       }

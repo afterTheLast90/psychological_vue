@@ -75,16 +75,18 @@
 <!--      </el-table-column>-->
       <el-table-column
           label="班级"
-          width="180">
+          width="120">
         <template #default="scope">
-          <el-tag v-for="item in scope.row.classes" :key="item.classId">{{ item.className }}</el-tag>
+          {{scope.row.classes[0].className}}
+<!--          <el-tag v-for="item in scope.row.classes" :key="item.classId">{{ item.className }}</el-tag>-->
         </template>
       </el-table-column>
       <el-table-column
           label="家长"
-          width="180">
+          width="120">
         <template #default="scope">
-          <el-tag v-for="item in scope.row.parents" :key="item.classId">{{ item.parentName }}</el-tag>
+          {{scope.row.parents[0].parentName}}
+<!--          <el-tag v-for="item in scope.row.parents" :key="item.classId">{{ item.parentName }}</el-tag>-->
         </template>
       </el-table-column>
       <el-table-column
@@ -99,26 +101,26 @@
               size="mini"
               type="primary"
               :disabled="scope.row.state===1"
-              @click="handleAddParent(scope.$index, scope.row)">家长更改
+              @click="handleAddParent(scope.$index, scope.row)">编辑家长
           </el-button>
-          <el-button
-              size="mini"
-              type="primary"
-              :disabled="scope.row.state===1"
-              @click="handleEditClass(scope.$index, scope.row)">加入班级
-          </el-button>
+<!--          <el-button-->
+<!--              size="mini"-->
+<!--              type="primary"-->
+<!--              :disabled="scope.row.state===1"-->
+<!--              @click="handleEditClass(scope.$index, scope.row)">加入班级-->
+<!--          </el-button>-->
           <el-button
               size="mini"
               type="primary"
               :disabled="scope.row.state===1"
               @click="handleEdit(scope.$index, scope.row)">编辑学生
           </el-button>
-          <el-button
-              size="mini"
-              type="danger"
-              :disabled="scope.row.state===1"
-              @click="handleDeleteClass(scope.$index, scope.row)">退出班级
-          </el-button>
+<!--          <el-button-->
+<!--              size="mini"-->
+<!--              type="danger"-->
+<!--              :disabled="scope.row.state===1"-->
+<!--              @click="handleDeleteClass(scope.$index, scope.row)">退出班级-->
+<!--          </el-button>-->
 <!--          <el-button-->
 <!--              size="mini"-->
 <!--              type="danger"-->
@@ -223,9 +225,9 @@
               </el-form-item>
             </el-col>
           </el-row>
-          <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
-            <el-input v-model="user.phone_number" autocomplete="off"></el-input>
-          </el-form-item>
+<!--          <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">-->
+<!--            <el-input v-model="user.phone_number" autocomplete="off"></el-input>-->
+<!--          </el-form-item>-->
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
@@ -234,62 +236,43 @@
         </div>
       </el-dialog>
     </div>
+<!--    <div>-->
+<!--      <el-dialog :close-on-click-modal="false" width="35%" title="加入班级" :visible.sync="editClassFormVisible">-->
+<!--        <el-form>-->
+<!--          <el-form-item label="班级" prop="name" :label-width="formLabelWidth">-->
+<!--            <el-cascader-->
+<!--                v-model="selectedOptions"-->
+<!--                :options="options"-->
+<!--                @change="handleChange"></el-cascader>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <div slot="footer" class="dialog-footer">-->
+<!--          <el-button @click="resetForm">重 置</el-button>-->
+<!--          <el-button @click="editClassFormVisible = false">取 消</el-button>-->
+<!--          <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>-->
+<!--        </div>-->
+<!--      </el-dialog>-->
+<!--    </div>-->
     <div>
-      <el-dialog :close-on-click-modal="false" width="35%" title="加入班级" :visible.sync="editClassFormVisible">
-        <el-form>
-          <el-form-item label="班级" prop="name" :label-width="formLabelWidth">
-            <el-cascader
-                v-model="selectedOptions"
-                :options="options"
-                @change="handleChange"></el-cascader>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="editClassFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <div>
-      <el-dialog :close-on-click-modal="false" width="35%" title="更改家长" :visible.sync="editParentFormVisible">
-        <el-form :model="user" status-icon :rules="rules" class="user" ref="user">
+      <el-dialog :close-on-click-modal="false" width="35%" title="编辑家长" :visible.sync="editParentFormVisible">
+        <el-form :model="parent" status-icon :rules="rules" class="user" ref="user">
           <el-form-item label="姓名" prop="name" :label-width="formLabelWidth">
-            <el-input v-model="user.name" autocomplete="off"></el-input>
+            <el-input v-model="parent.userName" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="账号" prop="account" :label-width="formLabelWidth">
-            <el-input v-model="user.account" autocomplete="off"></el-input>
+            <el-input v-model="parent.userAccount" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password" :label-width="formLabelWidth">
-            <el-input type="password" v-model="user.password" autocomplete="off" show-password></el-input>
+            <el-input type="password" v-model="parent.userPassword" autocomplete="off" show-password></el-input>
           </el-form-item>
-          <el-row style="margin-left: 0px; margin-right: 0px">
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="性别" prop="gender" :label-width="formLabelWidth">
-                <el-select v-model="user.gender" placeholder="男/女">
-                  <el-option label="男" value="男"></el-option>
-                  <el-option label="女" value="女"></el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-            <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="出生日期" prop="birthday" :label-width="formLabelWidth">
-                <el-date-picker
-                    v-model="user.birthday"
-                    type="date"
-                    placeholder="选择日期">
-                </el-date-picker>
-              </el-form-item>
-            </el-col>
-          </el-row>
           <el-form-item label="手机号" prop="phone_number" :label-width="formLabelWidth">
-            <el-input v-model="user.phone_number" autocomplete="off"></el-input>
+            <el-input v-model="parent.userPhoneNumber" autocomplete="off"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="editFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="editStudentSubmit">提 交</el-button>
+          <el-button @click="editParentFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editParentSubmit">提 交</el-button>
         </div>
 <!--        <el-form>-->
 <!--          <el-form-item label="家长" prop="name" :label-width="formLabelWidth">-->
@@ -310,27 +293,27 @@
 <!--        </div>-->
       </el-dialog>
     </div>
-    <div>
-      <el-dialog :close-on-click-modal="false" width="35%" title="退出班级" :visible.sync="delClassFormVisible">
-        <el-form>
-          <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
-            <el-select v-model="aClassId">
-              <el-option
-                  v-for="item in aClass"
-                  :key="item.classId"
-                  :label="item.className"
-                  :value="item.classId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="delSchoolSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
+<!--    <div>-->
+<!--      <el-dialog :close-on-click-modal="false" width="35%" title="退出班级" :visible.sync="delClassFormVisible">-->
+<!--        <el-form>-->
+<!--          <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">-->
+<!--            <el-select v-model="aClassId">-->
+<!--              <el-option-->
+<!--                  v-for="item in aClass"-->
+<!--                  :key="item.classId"-->
+<!--                  :label="item.className"-->
+<!--                  :value="item.classId">-->
+<!--              </el-option>-->
+<!--            </el-select>-->
+<!--          </el-form-item>-->
+<!--        </el-form>-->
+<!--        <div slot="footer" class="dialog-footer">-->
+<!--          <el-button @click="resetForm">重 置</el-button>-->
+<!--          <el-button @click="addFormVisible = false">取 消</el-button>-->
+<!--          <el-button type="primary" @click="delSchoolSubmit">提 交</el-button>-->
+<!--        </div>-->
+<!--      </el-dialog>-->
+<!--    </div>-->
 
   </div>
 </template>
@@ -445,7 +428,7 @@ export default {
       options: [],
       selectedOptions: [],
       aClass: [],
-      parent: [],
+      parent: {},
       parents: [],
       input: "",
       aClassId: null,
@@ -516,11 +499,11 @@ export default {
   mounted() {
     this.queryUsers();
     this.querySchoolList();
-    this.queryParent();
+    // this.queryParent();
   },
   methods: {
-    queryParent() {
-      request.get("/getParent").then(res => {
+    queryParent(parentId) {
+      request.get("/getParent",{"parentId" : parentId}).then(res => {
         this.parent = res.data
       })
     },
@@ -604,6 +587,19 @@ export default {
         }
       });
     },
+    editParentSubmit() {
+      this.$refs["user"].validate((valid) => {
+        if (valid) {
+          request.post("/modifyUser",this.parent).then(res => {
+            this.queryUsers();
+            this.editParentFormVisible = false
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
     handleDelete(index, row) {
       request.post("/deleteUser/" + row.userId).then(res => {
 
@@ -625,45 +621,27 @@ export default {
       this.user.id = row.userId;
       this.editClassFormVisible = true;
     },
-    editSchoolSubmit() {
-      request.post("/addClass", null, {
-        classId: this.user.classId,
-        studentId: this.user.id,
-      }).then(res => {
-        this.editClassFormVisible = false;
-        this.queryUsers();
-      })
-    },
-    delSchoolSubmit() {
-      console.log(this.aClassId);
-      console.log(this.user.id);
-      request.post("/deleteClass", null, {
-        classId: this.aClassId,
-        studentId: this.user.id,
-      }).then(res => {
-        this.delClassFormVisible = false;
-        this.queryUsers();
-      })
-    },
     find() {
       this.queryParams.value = this.input;
       this.queryParams.classId = this.user.classId;
       this.queryUsers();
     },
     handleAddParent(index, row) {
+      this.queryParent(row.parents[0].parentId);
+      console.log(this.parent)
       this.editParentFormVisible = true;
       this.studentId = row.userId;
       this.resetForm();
     },
-    editParentSubmit() {
-      request.post("/modifyParent",null,{
-        "studentId":this.studentId,
-        "parentId":this.parentId
-      }).then(res=>{
-        this.queryUsers()
-        this.editParentFormVisible=false
-      })
-    },
+    // editParentSubmit() {
+    //   request.post("/modifyParent",null,{
+    //     "studentId":this.studentId,
+    //     "parentId":this.parentId
+    //   }).then(res=>{
+    //     this.queryUsers()
+    //     this.editParentFormVisible=false
+    //   })
+    // },
     registerAccount(registerForm) {
       this.$refs[registerForm].validate((valid) => {
         if (valid) {
