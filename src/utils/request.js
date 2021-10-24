@@ -165,6 +165,25 @@ export function download (url, data,params, callback, timeout) {
         }
     )
 }
+export function postForm(url, data = {}, params = {}){
+    return new Promise((resolve, reject) => {
+        Axios({
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            url,
+            method: "post",
+            params,
+            data,
+        })
+            .then((res) => {
+                resolve(res);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+}
 export default {
     get,
     post,

@@ -1,5 +1,36 @@
 <template>
   <div>
+    <el-dialog title="导入信息" :visible.sync="importStudentFailedVisible">
+      一共{{importFailed.size}}条数据，{{importFailed.total}}条导入失败。
+      <div slot="footer" class="dialog-footer">
+        <el-button style="margin-right: 20px" @click="importStudentFailedVisible = false">取 消</el-button>
+        <el-button type="primary" @click="downloadFailedInfo">下载数据</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="导入学生" :visible.sync="importStudentVisible">
+      <el-form>
+        <el-form-item label="文件" :label-width="formLabelWidth">
+          <el-upload
+              :before-upload="beforeFile"
+              :headers="headers"
+              :on-success="successFile"
+              drag
+              :action="getUrl('/upload/parseExcel')"
+          >
+            <i class="el-icon-upload"></i>
+            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+            <div class="el-upload__tip" slot="tip">只能上传xsl/xlsx文件，且不超过10M</div>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button style="margin-right: 20px" @click="importStudentVisible = false">取 消</el-button>
+        <el-link style="margin-right: 20px" :href="getUrl('/upload/import_student_template.xlsx')">
+          <el-button>下载模板</el-button>
+        </el-link>
+        <el-button type="primary" @click="submit">确 定</el-button>
+      </div>
+    </el-dialog>
     <el-row style="margin-left: 0px; margin-right: 0px">
       <el-col style="padding-left: 0px; padding-right: 0px" :span="2">
         <h2>班级管理</h2>
@@ -91,6 +122,13 @@
       <el-table-column
           align="right">
         <template slot-scope="scope">
+          <el-button
+              size="mini"
+              type="primary"
+              :disabled="scope.row.state===1"
+              @click="handleImportStudent(scope.row.classId)">导入学生
+          </el-button>
+
           <el-button
               size="mini"
               type="primary"
@@ -239,6 +277,17 @@ export default {
       callback();
     };
     return {
+      importForm: {
+        classId: "",
+        data: []
+      },
+      importFailed:{
+        data:[],
+        size:0,
+        total:0,
+      },
+      importStudentVisible: false,
+      importStudentFailedVisible:false,
       aUser:{},
       classes: [],
       teacher: [],
@@ -284,6 +333,13 @@ export default {
       userRole:0
     }
   },
+  computed: {
+    headers() {
+      return {
+        "satoken": localStorage.getItem("sa-token"),
+      }
+    }
+  },
   mounted() {
     this.userRole=Number.parseInt(localStorage.getItem('userRole'));
 
@@ -297,6 +353,59 @@ export default {
     this.querySchool();
   },
   methods: {
+    downloadFailedInfo(){
+      // this.importStudentFailedVisible =false;
+      request.download("/downloadImportFailedStudentInfo",{
+        list:this.importFailed.data
+      });
+    },
+    getUrl(url){
+      return request.baseUrl + url;
+    },
+    handleImportStudent(classId){
+      this.importForm.classId=classId;
+      this.importStudentVisible=true;
+    },
+    beforeFile(file) { //上传文件之前的钩子 判断文件格式
+      let index = file.name.lastIndexOf('.');
+      let filetype = file.name.slice(index + 1);
+      if (filetype === 'xls' || filetype === 'xlsx') {
+        if (file.size<1024*1024*10)
+          return true
+        else{
+          this.$message.error('文件大小超过10M');
+          return false
+        }
+      } else {
+        this.$message.error('文件格式错误，请选择 xls 或 xlsx 格式的文件！');
+        return false
+      }
+    },
+    submit() {
+      if (!this.importForm.data){
+        this.$message.error('请选择文件');
+        return;
+      }
+      if (!this.importForm.classId){
+        this.$message.error('请选择班级');
+        return;
+      }
+      request.post("/importStudent",this.importForm).then(res=>{
+        this.importStudentVisible=false;
+        if (res.data.size===0){
+          this.$message.success("导入成功");
+        }else{
+          this.importFailed=res.data;
+          this.importStudentFailedVisible = true;
+        }
+      })
+    },
+    successFile(response, file, fileList) {
+      this.importForm.data=response.data;
+      if (!this.importForm.data){
+        this.$message.error('无数据');
+      }
+    },
     queryClasses() {
       request.get("/selectClasses", this.queryParams).then(res => {
         let data = res.data;
