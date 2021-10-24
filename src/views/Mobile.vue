@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%">
-    <el-container style="height: 100%">
+    <el-container style="height: 100%;max-width:805px">
       <el-header>心理测评</el-header>
       <el-main>
         <router-view></router-view></el-main>

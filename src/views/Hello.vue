@@ -1,7 +1,7 @@
 <template>
-  <div>
-    <el-image style="display: block;width: 50%;margin: 7% 25% 5% 25%"
-              :src="getUrl('/upload/hello.jpg')"></el-image>
+  <div id="hello">
+    <el-image style="display: block;"
+                            :src="getUrl('/upload/hello.png')"></el-image>
   </div>
 </template>
 
@@ -19,5 +19,13 @@ export default {
 </script>
 
 <style scoped>
-
+#hello{
+  background-color: #2c3e50;
+  height: calc(100% + 20px);
+  width: calc(100% + 40px);
+  padding: 0px;
+  margin-top: -20px;
+  margin-left: -20px;
+  overflow: hidden;
+}
 </style>

@@ -77,8 +77,8 @@
           label="班级"
           width="120">
         <template #default="scope">
-          {{scope.row.classes[0].className}}
-<!--          <el-tag v-for="item in scope.row.classes" :key="item.classId">{{ item.className }}</el-tag>-->
+<!--          {{scope.row.classes[0].className}}-->
+          <el-tag v-for="item in scope.row.classes" :key="item.classId">{{ item.className }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -103,24 +103,24 @@
               :disabled="scope.row.state===1"
               @click="handleAddParent(scope.$index, scope.row)">编辑家长
           </el-button>
-<!--          <el-button-->
-<!--              size="mini"-->
-<!--              type="primary"-->
-<!--              :disabled="scope.row.state===1"-->
-<!--              @click="handleEditClass(scope.$index, scope.row)">加入班级-->
-<!--          </el-button>-->
+          <el-button
+              size="mini"
+              type="primary"
+              :disabled="scope.row.state===1"
+              @click="handleEditClass(scope.$index, scope.row)">加入班级
+          </el-button>
           <el-button
               size="mini"
               type="primary"
               :disabled="scope.row.state===1"
               @click="handleEdit(scope.$index, scope.row)">编辑学生
           </el-button>
-<!--          <el-button-->
-<!--              size="mini"-->
-<!--              type="danger"-->
-<!--              :disabled="scope.row.state===1"-->
-<!--              @click="handleDeleteClass(scope.$index, scope.row)">退出班级-->
-<!--          </el-button>-->
+          <el-button
+              size="mini"
+              type="danger"
+              :disabled="scope.row.state===1"
+              @click="handleDeleteClass(scope.$index, scope.row)">退出班级
+          </el-button>
 <!--          <el-button-->
 <!--              size="mini"-->
 <!--              type="danger"-->
@@ -236,23 +236,23 @@
         </div>
       </el-dialog>
     </div>
-<!--    <div>-->
-<!--      <el-dialog :close-on-click-modal="false" width="35%" title="加入班级" :visible.sync="editClassFormVisible">-->
-<!--        <el-form>-->
-<!--          <el-form-item label="班级" prop="name" :label-width="formLabelWidth">-->
-<!--            <el-cascader-->
-<!--                v-model="selectedOptions"-->
-<!--                :options="options"-->
-<!--                @change="handleChange"></el-cascader>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <div slot="footer" class="dialog-footer">-->
-<!--          <el-button @click="resetForm">重 置</el-button>-->
-<!--          <el-button @click="editClassFormVisible = false">取 消</el-button>-->
-<!--          <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>-->
-<!--        </div>-->
-<!--      </el-dialog>-->
-<!--    </div>-->
+    <div>
+      <el-dialog :close-on-click-modal="false" width="35%" title="加入班级" :visible.sync="editClassFormVisible">
+        <el-form>
+          <el-form-item label="班级" prop="name" :label-width="formLabelWidth">
+            <el-cascader
+                v-model="selectedOptions"
+                :options="options"
+                @change="handleChange"></el-cascader>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="resetForm">重 置</el-button>
+          <el-button @click="editClassFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>
+        </div>
+      </el-dialog>
+    </div>
     <div>
       <el-dialog :close-on-click-modal="false" width="35%" title="编辑家长" :visible.sync="editParentFormVisible">
         <el-form :model="parent" status-icon :rules="rules" class="user" ref="user">
@@ -293,32 +293,33 @@
 <!--        </div>-->
       </el-dialog>
     </div>
-<!--    <div>-->
-<!--      <el-dialog :close-on-click-modal="false" width="35%" title="退出班级" :visible.sync="delClassFormVisible">-->
-<!--        <el-form>-->
-<!--          <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">-->
-<!--            <el-select v-model="aClassId">-->
-<!--              <el-option-->
-<!--                  v-for="item in aClass"-->
-<!--                  :key="item.classId"-->
-<!--                  :label="item.className"-->
-<!--                  :value="item.classId">-->
-<!--              </el-option>-->
-<!--            </el-select>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <div slot="footer" class="dialog-footer">-->
-<!--          <el-button @click="resetForm">重 置</el-button>-->
-<!--          <el-button @click="addFormVisible = false">取 消</el-button>-->
-<!--          <el-button type="primary" @click="delSchoolSubmit">提 交</el-button>-->
-<!--        </div>-->
-<!--      </el-dialog>-->
-<!--    </div>-->
+    <div>
+      <el-dialog :close-on-click-modal="false" width="35%" title="退出班级" :visible.sync="delClassFormVisible">
+        <el-form>
+          <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
+            <el-select v-model="aClassId">
+              <el-option
+                  v-for="item in aClass"
+                  :key="item.classId"
+                  :label="item.className"
+                  :value="item.classId">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="resetForm">重 置</el-button>
+          <el-button @click="addFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="delSchoolSubmit">提 交</el-button>
+        </div>
+      </el-dialog>
+    </div>
 
   </div>
 </template>
 <script>
 import request from "../utils/request";
+import {Message} from "element-ui";
 
 export default {
   data() {
@@ -543,8 +544,15 @@ export default {
       this.resetForm();
     },
     handleChange(arr) {
-      this.user.classId = arr[1];
-      this.registerForm.classId=arr[1];
+      console.log(localStorage.getItem("userRole"))
+      console.log(typeof localStorage.getItem("userRole"))
+      if (localStorage.getItem("userRole")==4){
+        this.user.classId = arr[0];
+        this.registerForm.classId=arr[0];
+      }else {
+        this.user.classId = arr[1];
+        this.registerForm.classId=arr[1];
+      }
     },
     handleDisable(index, row) {
       console.log(row.state)
@@ -613,13 +621,39 @@ export default {
       })
     },
     handleDeleteClass(index, row) {
-      this.user.id = row.userId;
-      this.aClass = row.classes;
-      this.delClassFormVisible = true;
+      if(row.classes.length<=1){
+        Message({
+          showClose: true,
+          message: "学生至少在一个班级内",
+          type: 'error'
+        });
+      }else {
+        this.user.id = row.userId;
+        this.aClass = row.classes;
+        this.delClassFormVisible = true;
+      }
     },
     handleEditClass(index, row) {
       this.user.id = row.userId;
       this.editClassFormVisible = true;
+    },
+    editSchoolSubmit() {
+      request.post("/addClass", null, {
+        classId: this.user.classId,
+        studentId: this.user.id,
+      }).then(res => {
+        this.editClassFormVisible = false;
+        this.queryUsers();
+      })
+    },
+    delSchoolSubmit() {
+      request.post("/deleteClass", null, {
+        classId: this.aClassId,
+        studentId: this.user.id,
+      }).then(res => {
+        this.delClassFormVisible = false;
+        this.queryUsers();
+      })
     },
     find() {
       this.queryParams.value = this.input;

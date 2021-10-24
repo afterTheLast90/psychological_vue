@@ -10,7 +10,15 @@
     </el-row>
     <el-row style="margin-left: 0px; margin-right: 0px">
       <el-col style="padding-left: 0px; padding-right: 0px" :span="3">
-        <el-select v-model="class1.schoolId" placeholder="请选择学校">
+        <el-select v-model="class1.schoolId" placeholder="请选择学校" v-if="userRole!=4">
+          <el-option
+              v-for="item in schools"
+              :key="item.schoolId"
+              :label="item.schoolName"
+              :value="item.schoolId">
+          </el-option>
+        </el-select>
+        <el-select v-model="class1.schoolId" placeholder="请选择学校" :disabled="true" v-if="userRole==4">
           <el-option
               v-for="item in schools"
               :key="item.schoolId"
@@ -20,7 +28,15 @@
         </el-select>
       </el-col>
       <el-col style="padding-left: 0px; padding-right: 0px" :span="3">
-        <el-select v-model="class1.teacherId" placeholder="请选择教师">
+        <el-select v-model="class1.teacherId" placeholder="请选择教师" v-if="userRole!=4">
+          <el-option
+              v-for="item in teacher"
+              :key="item.userId"
+              :label="item.userName"
+              :value="item.userId">
+          </el-option>
+        </el-select>
+        <el-select v-model="class1.teacherId" placeholder="请选择教师" :disabled="true" v-if="userRole==4">
           <el-option
               v-for="item in teacher"
               :key="item.userId"
@@ -106,8 +122,8 @@
         <el-form :model="class1" status-icon :rules="rules" class="class1" ref="class1">
           <el-row style="margin-left: 0px; margin-right: 0px">
             <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="学校" prop="schoolId" :label-width="formLabelWidth">
-                <el-select v-model="class1.schoolId" placeholder="请选择学校">
+              <el-form-item label="学校" prop="schoolId" :label-width="formLabelWidth" v-if="userRole!=4">
+                <el-select v-model="class1.schoolId" placeholder="请选择学校" >
                   <el-option
                       v-for="item in schools"
                       :key="item.schoolId"
@@ -118,8 +134,8 @@
               </el-form-item>
             </el-col>
             <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="教师" prop="teacherId" :label-width="formLabelWidth">
-                <el-select v-model="class1.teacherId" placeholder="请选择教师">
+              <el-form-item label="教师" prop="teacherId" :label-width="formLabelWidth" v-if="userRole!=4">
+                <el-select v-model="class1.teacherId" placeholder="请选择教师" >
                   <el-option
                       v-for="item in teacher"
                       :key="item.userId"
@@ -150,8 +166,8 @@
         <el-form :model="class1" status-icon :rules="rules" class="class1" ref="class1">
           <el-row style="margin-left: 0px; margin-right: 0px">
             <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="学校" prop="schoolId" :label-width="formLabelWidth">
-                <el-select v-model="class1.schoolId" placeholder="请选择学校">
+              <el-form-item label="学校" prop="schoolId" :label-width="formLabelWidth" v-if="userRole!=4">
+                <el-select v-model="class1.schoolId" placeholder="请选择学校" >
                   <el-option
                       v-for="item in schools"
                       :key="item.schoolId"
@@ -162,8 +178,8 @@
               </el-form-item>
             </el-col>
             <el-col style="padding-left: 0px; padding-right: 0px" :span="10">
-              <el-form-item label="教师" prop="teacherId" :label-width="formLabelWidth">
-                <el-select v-model="class1.teacherId" placeholder="请选择教师">
+              <el-form-item label="教师" prop="teacherId" :label-width="formLabelWidth" v-if="userRole!=4">
+                <el-select v-model="class1.teacherId" placeholder="请选择教师" >
                   <el-option
                       v-for="item in teacher"
                       :key="item.userId"
@@ -223,6 +239,7 @@ export default {
       callback();
     };
     return {
+      aUser:{},
       classes: [],
       teacher: [],
       schools: [],
@@ -264,9 +281,17 @@ export default {
         schoolId: null,
         value: "",
       },
+      userRole:0
     }
   },
   mounted() {
+    this.userRole=Number.parseInt(localStorage.getItem('userRole'));
+
+    request.get("/getUser").then(res=>{
+      console.log(res)
+      this.aUser=res.data
+    })
+
     this.queryClasses();
     this.queryTeacher();
     this.querySchool();
@@ -348,8 +373,8 @@ export default {
           request.post("/insertClasses", {
             classId: this.class1.id,
             className: this.class1.className,
-            teacherId: this.class1.teacherId,
-            schoolId: this.class1.schoolId,
+            teacherId: this.aUser.users.userId,
+            schoolId: 111,
             grade: this.class1.grade,
           }).then(res => {
             this.queryClasses();

@@ -3,6 +3,7 @@ import {Message} from 'element-ui';
 import VueRouter from "vue-router";
 
 // export const baseUrl = "http://serve.psychological.wmgx.top";
+// export const baseUrl = "http://192.168.2.28:8081";
 export const baseUrl = "http://localhost:8081";
 var Axios = axios.create();
 Axios.defaults.baseURL =baseUrl;

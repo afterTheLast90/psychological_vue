@@ -8,7 +8,7 @@
         <span style="width:auto; display:block; text-align:left;">
         第{{ item.index }}题：
           <span v-if="!item.questionType">{{ item.question }}</span>
-          <el-image v-if="item.questionType" style="display: block;margin: 5px 0 10px;width: 400px;"
+          <el-image v-if="item.questionType" style="display: block;margin: 5px 0 10px; max-width: 600px"
                     :src="getUrl(item.question)"></el-image>
       </span>
         <el-checkbox-group v-model="answers[index].answer" v-if="item.chooseType===1">
@@ -28,6 +28,7 @@
         </el-radio-group>
       </div>
     </el-form>
+
 
     <el-form label-position="left" v-for="(item,index) in questionnaireForm" :key="index"
              status-icon class="questionnaireForm"
@@ -83,7 +84,7 @@ export default {
   },
   mounted() {
     this.id = this.$route.query.id
-    this.role = this.$route.query.userRole
+    this.role = Number.parseInt(this.$route.query.userRole);
     this.userId = this.$route.query.userId
     this.studentId = this.$route.query.studentId
     this.state = this.$route.query.state
@@ -269,3 +270,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.el-radio-group{
+  display: block;
+}
+</style>

@@ -1,17 +1,19 @@
 <template>
   <div style="height: 100%">
     <el-container style="height: 100%">
-      <el-header style="padding: 0px;height: 60px">
-        <el-menu
-            style="height: 60px;"
-            mode="horizontal"
-            background-color="#545c64"
-            text-color="#fff"
-            active-text-color="#ffd04b">
-<!--          <el-image style="display: block;width: 3%"-->
-<!--                    :src="getUrl('/upload/logo.jpg')"></el-image>-->
-          <h1 style="color: #DCDFE6" >心理测评后台管理系统</h1>
-        </el-menu>
+      <el-header style="padding: 0px;background-color: #545c64">
+<!--        <el-menu-->
+<!--            style="height: 60px;"-->
+<!--            mode="horizontal"-->
+<!--            background-color="#545c64"-->
+<!--            text-color="#fff"-->
+<!--            active-text-color="#ffd04b">-->
+<!--        <el-row style="height: 60px">-->
+<!--          <el-col :span="3" style="height: 60px">-->
+<!--          </el-col>-->
+<!--        </el-row>-->
+          <h1 style="color: #DCDFE6;" >心理素质测评后台管理系统</h1>
+<!--        </el-menu>-->
       </el-header>
       <el-container style="height: 100%;overflow-y: hidden">
         <el-aside width="200px">
@@ -26,7 +28,7 @@
               <template #title>管理员管理</template>
             </el-menu-item>
 
-            <el-menu-item index="/topBar/area" v-if="role==0 || role==1">
+            <el-menu-item index="/topBar/area" v-if="role==0">
               <template #title>地区管理</template>
             </el-menu-item>
             <el-menu-item index="/topBar/teacher" v-if="role==0 || role==1">
@@ -44,9 +46,32 @@
             <el-menu-item index="/topBar/publish" v-if="role==0 || role==1">
               <template #title>发布记录</template>
             </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true">
+              <template>
+                <el-image style="display: block;z-index: 999"
+                          :src="getUrl('/upload/logo.png')"></el-image>
+              </template>
+            </el-menu-item>
           </el-menu>
+
         </el-aside>
         <el-container>
+<!--          <el-main v-if="window.location.href.indexOf('hello')!=-1" style="background-color: #2c3e50">-->
+<!--            <router-view></router-view>-->
+<!--          </el-main>-->
+<!--          <el-main v-if="!window.location.href.indexOf('hello')!=-1" style="box-sizing: content-box;">-->
+<!--          <router-view></router-view>-->
+<!--        </el-main>-->
           <el-main>
             <router-view></router-view>
           </el-main>
@@ -66,7 +91,8 @@ import request from "../utils/request";
 export default {
   data() {
     return {
-      role: -1
+      role: -1,
+      flag:false
     }
   }, methods: {
     getUrl(url) {
@@ -74,10 +100,20 @@ export default {
     },
   },
   mounted() {
+    // if (window.location.href.indexOf("hello")!=-1){
+    //   this.flag=true
+    // }
     this.role = localStorage.getItem("userRole")
   }
 }
 </script>
 <style>
-
+.el-main{
+  padding: 20px 20px 0px 20px;
+}
+.noHover{
+  opacity:1 !important;
+  cursor:default !important;
+  /*background-color: rgb(84,92,100);*/
+}
 </style>
