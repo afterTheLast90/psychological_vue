@@ -132,7 +132,6 @@
           <el-button
               size="mini"
               type="primary"
-              :disabled="scope.row.state===1"
               @click="handleEdit(scope.$index, scope.row)">编辑
           </el-button>
 <!--          <el-button-->

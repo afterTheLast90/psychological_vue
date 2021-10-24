@@ -128,6 +128,7 @@
 
 <script>
 import request from "../utils/request";
+import {Message} from "element-ui";
 
 export default {
   name: "Publish",
@@ -210,12 +211,19 @@ export default {
     },
     exportResult(index,row){
       // request.download("/export",null)
-      console.log(12312)
-      request.download("/export",null,{
-        "publishId":row.publish.publishId
-      }).then(res=>{
-        this.queryPublish()
-      })
+      if (row.publish.submissionNumber>0){
+        request.download("/export",null,{
+          "publishId":row.publish.publishId
+        }).then(res=>{
+          this.queryPublish()
+        })
+      }else {
+        Message({
+          showClose: true,
+          message: "当前没有人完成问卷",
+          type: 'error'
+        });
+      }
     }
   },
   mounted() {

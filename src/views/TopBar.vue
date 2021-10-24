@@ -12,7 +12,7 @@
 <!--          <el-col :span="3" style="height: 60px">-->
 <!--          </el-col>-->
 <!--        </el-row>-->
-          <h1 style="color: #DCDFE6;" >心理素质测评后台管理系统</h1>
+          <h2 style="color: #DCDFE6;margin-top: 14px;margin-left: -1700px" >心理素质测评后台</h2>
 <!--        </el-menu>-->
       </el-header>
       <el-container style="height: 100%;overflow-y: hidden">
@@ -28,7 +28,7 @@
               <template #title>管理员管理</template>
             </el-menu-item>
 
-            <el-menu-item index="/topBar/area" v-if="role==0">
+            <el-menu-item index="/topBar/area" v-if="role==0 || role==1">
               <template #title>地区管理</template>
             </el-menu-item>
             <el-menu-item index="/topBar/teacher" v-if="role==0 || role==1">
@@ -45,6 +45,16 @@
             </el-menu-item>
             <el-menu-item index="/topBar/publish" v-if="role==0 || role==1">
               <template #title>发布记录</template>
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true" v-if="role==4 || role==1">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true" v-if="role==4">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true" v-if="role==4">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true" v-if="role==4">
+            </el-menu-item>
+            <el-menu-item class="noHover" :disabled="true" v-if="role==4">
             </el-menu-item>
             <el-menu-item class="noHover" :disabled="true">
             </el-menu-item>
