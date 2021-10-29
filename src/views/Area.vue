@@ -92,8 +92,8 @@
           <el-button
               size="mini"
               type="primary"
-              :disabled="scope.row.state===1"
-              @click="handleEdit(scope.$index, scope.row)">编辑地区
+              :disabled="userRole!=0"
+              @click="handleEdit(scope.$index, scope.row)">修改地区负责人
           </el-button>
           <el-button
               size="mini"
@@ -122,8 +122,8 @@
 
     <div>
       <el-dialog :close-on-click-modal="false" width="35%" title="添加/编辑地区" :visible.sync="addFormVisible">
-        <el-form :model="area">
-          <el-form-item label="地区" :label-width="formLabelWidth">
+        <el-form :model="area" :rules="rule" ref="area">
+          <el-form-item label="地区" prop="areaId" :label-width="formLabelWidth">
             <el-cascader
                 placeholder="请选择地区"
                 class="widthSmall"
@@ -133,7 +133,7 @@
                 @change="addressChange">
             </el-cascader>
           </el-form-item>
-          <el-form-item label="负责人" :label-width="formLabelWidth">
+          <el-form-item label="负责人" prop="principal" :label-width="formLabelWidth" v-if="userRole==0">
             <el-select v-model="principal" placeholder="请选择负责人">
               <el-option
                   v-for="item in users"
@@ -179,28 +179,28 @@
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
+          <el-button @click="addSchoolFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="addSchoolSubmit">提 交</el-button>
         </div>
       </el-dialog>
     </div>
     <div>
       <el-dialog :close-on-click-modal="false" width="35%" title="删除学校" :visible.sync="delSchoolFormVisible">
-        <el-form>
-          <el-form-item label="学校名称" prop="name" :label-width="formLabelWidth">
-            <el-select v-model="school.schoolId" >
+        <el-form :model="school" :rules="rule" ref="delSchool">
+          <el-form-item label="学校名称" prop="schoolId" :label-width="formLabelWidth">
+            <el-select v-model="school.schoolId">
               <el-option
-                v-for="item in schools"
-                :key="item.schoolId"
-                :label="item.schoolName"
-                :value="item.schoolId">
+                  v-for="item in schools"
+                  :key="item.schoolId"
+                  :label="item.schoolName"
+                  :value="item.schoolId">
               </el-option>
             </el-select>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
+          <el-button @click="delSchoolFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="delSchoolSubmit">提 交</el-button>
         </div>
       </el-dialog>
@@ -221,18 +221,48 @@ export default {
       }
       callback();
     };
+    let validateAreaId = (rule, value, callback) => {
+      if (value === '' || value === null) {
+        callback(new Error('学校名不能为空'))
+      }
+      callback();
+    };
     return {
+      userRole: null,
       users: [],
       areas: [],
       cities: [],
       provinces: [],
-      schools:[],
+      schools: [],
       principal: null,
       fromLabelWidth: '80px',
       addFormVisible: false,
       editFormVisible: false,
       delSchoolFormVisible: false,
       addSchoolFormVisible: false,
+      rule: {
+        areaId: [
+
+          {validator: (rule, value, callback) => {
+              console.log(this.selectedOptions)
+              if (this.selectedOptions[0]==null) {
+                callback(new Error('请选择地区'));
+              }else {
+                callback();
+              }} , trigger: 'blur'},
+        ],
+        principal: [
+          {validator: (rule, value, callback) => {
+              if (!this.principal) {
+                callback(new Error('请选择负责人'));
+              }else {
+                callback();
+              }} , trigger: 'blur'},
+        ],
+        schoolId: [
+          {required: true, message: "请选择学校", trigger: 'blur'}
+        ]
+      },
       school: {
         schoolId: null,
         name: "",
@@ -279,6 +309,7 @@ export default {
     this.queryArea();
     this.queryCity();
     this.queryProvinces();
+    this.userRole = localStorage.getItem("userRole");
   },
   created() {
     // 初始化省市区
@@ -334,17 +365,27 @@ export default {
       this.queryUsers();
     },
     addAreaSubmit() {
-      this.area.areaId = this.form.areaCode;
-      this.area.areaName = CodeToText[this.form.areaCode];
-      this.area.cityId = this.form.cityCode;
-      this.area.cityName = CodeToText[this.form.cityCode];
-      this.area.provinceId = this.form.provinceCode;
-      this.area.provinceName = CodeToText[this.form.provinceCode];
-      this.area.principal = this.principal;
-      request.post("/addArea", this.area).then(res => {
-        this.addFormVisible = false;
-        this.queryArea();
-      })
+      this.$refs["area"].validate((valid) => {
+        if (valid) {
+          this.area.areaId = this.form.areaCode;
+          this.area.areaName = CodeToText[this.form.areaCode];
+          this.area.cityId = this.form.cityCode;
+          this.area.cityName = CodeToText[this.form.cityCode];
+          this.area.provinceId = this.form.provinceCode;
+          this.area.provinceName = CodeToText[this.form.provinceCode];
+          if (this.userRole === 1) {
+            this.area.principal = 100;
+          }
+          this.area.principal = this.principal;
+          request.post("/addArea", this.area).then(res => {
+            this.addFormVisible = false;
+            this.queryArea();
+          })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     addressChange(arr) {
       this.form.provinceCode = arr[0];
@@ -388,16 +429,23 @@ export default {
       this.addSchoolFormVisible = true;
     },
     delSchool(index, row) {
-      this.schools=row.school;
+      this.schools = row.school;
       this.delSchoolFormVisible = true;
     },
     delSchoolSubmit() {
+      this.$refs["delSchool"].validate((valid) => {
+        if (valid) {
           request.post("/delSchool", null, {
             schoolId: this.school.schoolId,
           }).then(res => {
             this.queryArea();
             this.delSchoolFormVisible = false;
           })
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
     },
     resetForm() {
       this.$nextTick(() => {

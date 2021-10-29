@@ -2,9 +2,12 @@ import axios from "axios";
 import {Message} from 'element-ui';
 import VueRouter from "vue-router";
 
-// export const baseUrl = "http://serve.psychological.wmgx.top";
+export const baseUrl = "http://serve.psychological.wmgx.top";
 // export const baseUrl = "http://192.168.2.28:8081";
-export const baseUrl = "http://localhost:8081";
+// export const baseUrl = "http://localhost:8081";
+export const baseUrlFornt = "http://psychological.wmgx.top"
+
+// export const baseUrlFornt = "http://localhost:8080"
 var Axios = axios.create();
 Axios.defaults.baseURL =baseUrl;
 // Axios.defaults.baseURL = "http://localhost:8081";
@@ -40,10 +43,10 @@ Axios.interceptors.response.use(
             let url = window.location.href;
             if(url.indexOf("topBar")===-1){
                 // 后台管理
-                window.location.href="http://localhost:8080/"
+                window.location.href=baseUrlFornt
             }else{
                 // 移动端
-                window.location.href="http://localhost:8080/LoginAdmin"
+                window.location.href= baseUrlFornt+"/LoginAdmin"
             }
             Message({
                 showClose: true,

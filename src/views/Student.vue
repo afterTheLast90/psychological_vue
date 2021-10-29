@@ -544,8 +544,6 @@ export default {
       this.resetForm();
     },
     handleChange(arr) {
-      console.log(localStorage.getItem("userRole"))
-      console.log(typeof localStorage.getItem("userRole"))
       if (localStorage.getItem("userRole")==4){
         this.user.classId = arr[0];
         this.registerForm.classId=arr[0];
