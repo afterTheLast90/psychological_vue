@@ -73,20 +73,21 @@
       <!--          </el-tag>-->
       <!--        </template>-->
       <!--      </el-table-column>-->
-      <el-table-column
-          label="班级"
-          width="120">
-        <template #default="scope">
-          <!--          {{scope.row.classes[0].className}}-->
-          <el-tag v-for="item in scope.row.classes" :key="item.classId">{{ item.className }}</el-tag>
-        </template>
-      </el-table-column>
+
       <el-table-column
           label="家长"
           width="120">
         <template #default="scope">
           {{scope.row.parents[0].parentName}}
           <!--          <el-tag v-for="item in scope.row.parents" :key="item.classId">{{ item.parentName }}</el-tag>-->
+        </template>
+      </el-table-column>
+      <el-table-column
+          label="班级"
+          width="500">
+        <template #default="scope">
+          <!--          {{scope.row.classes[0].className}}-->
+          <el-tag v-for="item in scope.row.classes" :key="item.classId">{{ item.className }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column
@@ -582,7 +583,7 @@ export default {
             "userGender": this.user.gender === "男" ? 1 : 0,
             "userName": this.user.name,
             "userPassword": this.user.password,
-            "userPhoneNumber": this.user.phone_number
+            "userPhoneNumber": 13777777777
           }).then(res => {
             this.queryUsers();
             this.editFormVisible = false

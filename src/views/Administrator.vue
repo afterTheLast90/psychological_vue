@@ -40,18 +40,16 @@
       </el-table-column>
       <el-table-column
           label="性别"
-          width="180">
+          width="120">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userGender === 1 ? "男" : "女" }}</span>
+          <span>{{ scope.row.userGender === 1 ? "男" : "女" }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="账号"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userAccount }}</span>
+          <span>{{ scope.row.userAccount }}</span>
         </template>
       </el-table-column>
 <!--      <el-table-column-->
@@ -66,8 +64,7 @@
           label="手机号"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userPhoneNumber }}</span>
+          <span>{{ scope.row.userPhoneNumber }}</span>
         </template>
       </el-table-column>
 <!--      <el-table-column-->
@@ -81,7 +78,7 @@
 <!--      </el-table-column>-->
       <el-table-column
           label="地区"
-          width="180">
+          width="500">
         <template #default="scope">
           <el-tag v-for="item in scope.row.areas" :key="item.areaId">{{ item.areaName }}</el-tag>
         </template>

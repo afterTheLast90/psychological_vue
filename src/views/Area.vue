@@ -45,7 +45,7 @@
           label="地区"
           width="180">
         <template #default="scope">
-          <i class="el-icon-user-solid"></i>
+          <i class="el-icon-map-location"></i>
           <span style="margin-left: 10px">{{ scope.row.areaName }}</span>
         </template>
       </el-table-column>
@@ -53,29 +53,26 @@
           label="市"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.cityName }}</span>
+          <span>{{ scope.row.cityName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="省"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.provinceName }}</span>
+          <span>{{ scope.row.provinceName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="负责人"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userName }}</span>
+          <span>{{ scope.row.userName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="学校"
-          width="180">
+          width="300">
         <template #default="scope">
           <el-tag v-for="item in scope.row.school" :key="item.schoolId">{{ item.schoolName }}</el-tag>
         </template>

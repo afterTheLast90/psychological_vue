@@ -91,7 +91,7 @@
           label="学校"
           width="180">
         <template #default="scope">
-          <i class="el-icon-user-solid"></i>
+          <i class="el-icon-school"></i>
           <span style="margin-left: 10px">{{ scope.row.schoolName }}</span>
         </template>
       </el-table-column>
@@ -99,24 +99,21 @@
           label="年级"
           width="180">
         <template #default="scope">
-          <i class="el-icon-user-solid"></i>
-          <span style="margin-left: 10px">{{ scope.row.grade }}</span>
+          <span >{{ scope.row.grade }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="班级"
           width="180">
         <template #default="scope">
-          <i class="el-icon-user-solid"></i>
-          <span style="margin-left: 10px">{{ scope.row.className }}</span>
+          <span>{{ scope.row.className }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="教师"
           width="180">
         <template #default="scope">
-          <i class="el-icon-user-solid"></i>
-          <span style="margin-left: 10px">{{ scope.row.teacherName }}</span>
+          <span>{{ scope.row.teacherName }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -479,10 +476,10 @@ export default {
         if (valid) {
           this.addFormVisible = false;
           request.post("/insertClasses", {
-            classId: this.class1.id,
+            classId: 111,
             className: this.class1.className,
-            teacherId: this.aUser.users.userId,
-            schoolId: 111,
+            teacherId: this.class1.teacherId,
+            schoolId: this.class1.schoolId,
             grade: this.class1.grade,
           }).then(res => {
             this.queryClasses();

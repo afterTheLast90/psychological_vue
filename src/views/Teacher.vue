@@ -42,16 +42,14 @@
           label="性别"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userGender === 1 ? "男" : "女" }}</span>
+          <span>{{ scope.row.userGender === 1 ? "男" : "女" }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="账号"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userAccount }}</span>
+          <span>{{ scope.row.userAccount }}</span>
         </template>
       </el-table-column>
 <!--      <el-table-column-->
@@ -66,16 +64,14 @@
           label="学校"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.school.schoolName }}</span>
+          <span>{{ scope.row.school.schoolName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="手机号"
           width="180">
         <template #default="scope">
-          <i class="el-icon-time"></i>
-          <span style="margin-left: 10px">{{ scope.row.userPhoneNumber }}</span>
+          <span>{{ scope.row.userPhoneNumber }}</span>
         </template>
       </el-table-column>
 <!--      <el-table-column-->

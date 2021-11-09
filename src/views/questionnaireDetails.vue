@@ -595,6 +595,7 @@ export default {
     questionnaireSubmit() {
       let that = this;
       let flag = false;
+      let resultFlag = false;
       this.questionnaireForm.forEach(function (s) {
         if (s.question === "" || s.question === null) {
           flag = true
@@ -604,23 +605,92 @@ export default {
             flag = true
           }
         })
+      });
+      this.questionnaire.variables.forEach(function (b) {
+        if (b.name === "" || b.name === null) {
+          flag = true;
+        }
+        if (b.introduction === "" || b.introduction === null) {
+          flag = true;
+        }
       })
       if (flag) {
-        that.$message("请检查");
+        Message({
+          showClose: true,
+          message: "不能有空值请检查",
+          type: 'error'
+        });
         return;
       }
-
       if (this.questionnaire.calculation === 1) {
         this.questionnaireForm.forEach(function (s) {
           s.factorGroupId = 0;
         })
       }
+
+      if (this.questionnaireForm.length == 0) {
+        Message({
+          showClose: true,
+          message: "题目不能为空",
+          type: 'error'
+        });
+        return;
+      }
+      if (this.questionnaire.variables == null) {
+        Message({
+          showClose: true,
+          message: "变量不能为空",
+          type: 'error'
+        });
+        return;
+      }
+      if (this.questionnaire.results == null) {
+        Message({
+          showClose: true,
+          message: "结果不能为空",
+          type: 'error'
+        });
+        return;
+      }
+      console.log(this.questionnaire.results)
+      if (this.questionnaire.results.forEach(function (s,indexs) {
+        if (s.conditions.length == 0) {
+          resultFlag = true;
+        }
+        if (s.name===""||s.introduction===""||s.name===null||s.introduction==null){
+          Message({
+            showClose: true,
+            message: "结果" + (indexs + 1) + "不完整",
+            type: 'error'
+          });
+          throw onerror;
+        }
+        s.conditions.forEach(function (b, index) {
+          if (b.variable == null||b.variable=="") {
+            Message({
+              showClose: true,
+              message:  "结果" + (indexs + 1) +"条件" + (index + 1) + "不完整",
+              type: 'error'
+            });
+            throw onerror;
+          }
+        })
+      })) ;
+      if (!resultFlag) {
+        that.$message("必须有一个没有条件的默认结果");
+        return;
+      }
       request.post("/modifyQuestionnaire", this.questionnaire).then(res => {
-      }).then(res => {
         request.post("/modifyDetails", this.questionnaireForm).then(res => {
         }).then(res => {
           this.$router.push({name: 'questionnaire'})
         })
+      }).catch(res => {
+        Message({
+          showClose: true,
+          message: "变量和结果不能为空",
+          type: 'error'
+        });
       })
     }
   },

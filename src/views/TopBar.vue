@@ -126,4 +126,7 @@ export default {
   cursor:default !important;
   /*background-color: rgb(84,92,100);*/
 }
+.el-aside{
+  overflow: hidden;
+}
 </style>

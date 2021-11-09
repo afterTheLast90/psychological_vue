@@ -26,10 +26,10 @@
             {{ user.users.userBirthday }}
             </span>
           </el-form-item>
-          <el-form-item label="班级" :label-width="formLabelWidth" align="left" v-if="user.users.userRole!=4">
+          <el-form-item label="班级" :label-width="formLabelWidth" align="left" v-if="user.users.userRole==2">
             <span style="width:auto; display:block; text-align:left;">
             <div v-for="(item,index) in user.className" :key="index">
-              {{item}}
+              {{ item }}
             </div>
 <!--              <el-button @click="addClass">加入班级</el-button>-->
             </span>
@@ -38,22 +38,20 @@
       </el-main>
     </el-container>
 
-<!--    <div>-->
-<!--      <el-dialog :close-on-click-modal="false" width="100%" title="加入班级" :visible.sync="editClassFormVisible" >-->
-<!--        <el-form>-->
-<!--          <el-form-item label="班级" prop="name" :label-width="formLabelWidth">-->
-<!--            <el-cascader-->
-<!--                v-model="selectedOptions"-->
-<!--                :options="options"-->
-<!--                @change="handleChange"></el-cascader>-->
-<!--          </el-form-item>-->
-<!--        </el-form>-->
-<!--        <div slot="footer" class="dialog-footer">-->
-<!--          <el-button @click="addFormVisible = false">取 消</el-button>-->
-<!--          <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>-->
-<!--        </div>-->
-<!--      </el-dialog>-->
-<!--    </div>-->
+    <el-dialog :close-on-click-modal="false" width="100%" title="加入班级" :visible.sync="editClassFormVisible">
+      <el-form>
+        <el-form-item label="班级" prop="name" :label-width="formLabelWidth">
+          <el-cascader
+              v-model="selectedOptions"
+              :options="options"
+              @change="handleChange"></el-cascader>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editSchoolSubmit">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -63,13 +61,13 @@ import request from "../utils/request";
 export default {
   data() {
     return {
-      classId:null,
+      classId: null,
       selectedOptions: [],
       options: [],
-      editClassFormVisible:false,
+      editClassFormVisible: false,
       user: [],
       formLabelWidth: "80px",
-      circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"
+      circleUrl: "https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png",
     }
   },
   mounted() {
@@ -88,8 +86,8 @@ export default {
         this.user = res.data
       })
     },
-    addClass(){
-      this.editClassFormVisible=true
+    addClass() {
+      this.editClassFormVisible = true
     },
     handleChange(arr) {
       this.classId = arr[1];
@@ -101,6 +99,7 @@ export default {
       }).then(res => {
         this.editClassFormVisible = false;
         this.queryUsers();
+        this.querySchoolList();
       })
     },
   }

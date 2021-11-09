@@ -5,35 +5,35 @@
         style="width: 100%">
       <el-table-column
           label="问卷名"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.questionnaireName}}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="发布人"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.publisherName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="发布对象"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.strangeName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="状态"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.publish.state==0> new Date()?"已发布":"已截至"}}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="提交人数"
-          width="300">
+          width="120">
         <template #default="scope">
           <span>{{scope.row.publish.submissionNumber}}</span>
         </template>
