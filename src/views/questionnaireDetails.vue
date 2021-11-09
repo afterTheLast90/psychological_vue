@@ -448,7 +448,7 @@ export default {
       }
       this.questionnaire.topicTemplate.push({
         optionName: String.fromCharCode(this.questionnaire.topicTemplate.length + 65),
-        optionPoints: 0,
+        optionPoints: this.questionnaire.topicTemplate.length +1,
         optionContent: "",
         optionType: false
       })
@@ -471,7 +471,7 @@ export default {
       }
       item.answerOptions.push({
         optionName: String.fromCharCode(item.answerOptions.length + 65),
-        optionPoints: 0,
+        optionPoints: item.answerOptions.length+1,
         optionContent: "",
         optionType: item.answerOptions[0].optionType
       })
@@ -506,9 +506,18 @@ export default {
       })
     },
     negate(item) {
-      item.answerOptions.forEach(function (s) {
-        s.optionPoints = s.optionPoints % item.answerOptions.length + 1
-      })
+
+      let arr = [];
+      for(let i = 0 ;i<item.answerOptions.length;i++){
+        arr.push(item.answerOptions[i].optionPoints);
+      }
+      for(let i = 0 ;i<item.answerOptions.length;i++){
+        item.answerOptions[i].optionPoints=
+            arr[item.answerOptions.length-1-i];
+      }
+      // item.answerOptions.forEach(function (s) {
+      //   s.optionPoints = s.optionPoints % item.answerOptions.length + 1
+      // })
     },
     addVariable() {
       if (!this.questionnaire.variables) {
