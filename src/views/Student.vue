@@ -679,6 +679,8 @@ export default {
       this.$refs[registerForm].validate((valid) => {
         if (valid) {
           request.post("/register", this.registerForm).then(res => {
+            this.addFormVisible=false;
+            this.queryUsers();
             this.register = false;
           });
         } else {

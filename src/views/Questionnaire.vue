@@ -44,7 +44,7 @@
           label="是否乱序"
           width="100">
         <template #default="scope">
-          <span>{{ scope.row.orderNo?"是":"否"}}</span>
+          <span>{{ scope.row.orderNo ? "是" : "否" }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -73,13 +73,14 @@
           <el-button
               size="mini"
               type="primary"
-              :disabled="scope.row.questionnaireState!=0"
+              :disabled="!(scope.row.questionnaireState==0 && (scope.row.creator===user.userId || user.userRole===0))"
               @click="confirm(scope.$index, scope.row)">确认问卷
           </el-button>
           <el-button
               size="mini"
               type="primary"
-              :disabled="scope.row.questionnaireState!=0" @click="routeLink(scope.$index, scope.row)">编辑问卷
+              :disabled="!(scope.row.questionnaireState==0 && (scope.row.creator===user.userId || user.userRole===0))"
+              @click="routeLink(scope.$index, scope.row)">编辑问卷
           </el-button>
           <el-button
               size="mini"
@@ -90,7 +91,7 @@
           <el-button
               size="mini"
               type="danger"
-              :disabled="scope.row.questionnaireState!=0"
+              :disabled="user.userRole==0 ? false :!((scope.row.questionnaireState==0 && (scope.row.creator===user.userId || user.userRole===0)))"
               @click="handleDel(scope.$index, scope.row)">删除问卷
           </el-button>
         </template>
@@ -106,93 +107,91 @@
         :total="page.total">
     </el-pagination>
 
-    <div>
-      <el-dialog :close-on-click-modal="false" width="35%" title="发布问卷" :visible.sync="releaseFormVisible">
 
-        <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" ref="release">
-          <el-form-item label="发布类型" prop="publishType" :label-width="formLabelWidth">
-            <el-select v-model="releaseParams.publishType" placeholder="请选择" @change="typeChange">
-              <el-option label="地区" :value=0></el-option>
-              <el-option label="学校" :value=1></el-option>
-              <el-option label="班级" :value=2></el-option>
-              <el-option label="学生个人" :value=3></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="班级" prop="id" :label-width="formLabelWidth"
-                        v-if="releaseParams.publishType==2||releaseParams.publishType==3">
-            <el-cascader
-                v-model="selectedOptions"
-                :options="options"
-                @change="handleChange"></el-cascader>
-          </el-form-item>
-          <el-form-item label="地区" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==0">
-            <el-select v-model="releaseParams.id" placeholder="请选择">
-              <el-option
-                  v-for="area in areas"
-                  :key="area.areaId"
-                  :label="area.areaName"
-                  :value="area.areaId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="学校" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==1">
-            <el-select v-model="releaseParams.id" placeholder="请选择">
-              <el-option
-                  v-for="school in schools"
-                  :key="school.schoolId"
-                  :label="school.schoolName"
-                  :value="school.schoolId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="学生个人" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==3">
-            <el-select v-model="releaseParams.id" placeholder="请选择">
-              <el-option
-                  v-for="student in students"
-                  :key="student.studentsClass.studentId"
-                  :label="student.studentName"
-                  :value="student.studentsClass.studentId">
-              </el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="时间" prop="dataTime" :label-width="formLabelWidth">
-            <el-date-picker
-                @change="handleChangeTime"
-                :editable="false"
-                v-model="releaseParams.dataTime"
-                type="datetimerange"
-                range-separator="至"
-                value-format="yyyy-MM-dd HH:mm:ss"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期">
-            </el-date-picker>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="releaseFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="releaseSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
-    <div>
-      <el-dialog :close-on-click-modal="false" width="35%" title="添加问卷" :visible.sync="addFormVisible">
+    <el-dialog :close-on-click-modal="false" width="35%" title="发布问卷" :visible.sync="releaseFormVisible">
 
-        <el-form :model="questionnaires" status-icon :rules="rules" ref="questionnaires">
-          <el-form-item label="问卷名称" prop="questionnaireName" :label-width="formLabelWidth">
-            <el-input v-model="questionnaires.questionnaireName" autocomplete="off"></el-input>
-          </el-form-item>
-          <el-form-item label="问卷简介" prop="questionnaireIntroduction" :label-width="formLabelWidth">
-            <el-input type="textarea" v-model="questionnaires.questionnaireIntroduction" autocomplete="off"></el-input>
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="resetForm">重 置</el-button>
-          <el-button @click="addFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addQuestionnaireSubmit">提 交</el-button>
-        </div>
-      </el-dialog>
-    </div>
+      <el-form :model="releaseParams" status-icon :rules="releaseParamsRules" ref="release">
+        <el-form-item label="发布类型" prop="publishType" :label-width="formLabelWidth">
+          <el-select v-model="releaseParams.publishType" placeholder="请选择" @change="typeChange">
+            <el-option label="地区" :value=0></el-option>
+            <el-option label="学校" :value=1></el-option>
+            <el-option label="班级" :value=2></el-option>
+            <el-option label="学生个人" :value=3></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="班级" prop="id" :label-width="formLabelWidth"
+                      v-if="releaseParams.publishType==2||releaseParams.publishType==3">
+          <el-cascader
+              v-model="selectedOptions"
+              :options="options"
+              @change="handleChange"></el-cascader>
+        </el-form-item>
+        <el-form-item label="地区" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==0">
+          <el-select v-model="releaseParams.id" placeholder="请选择">
+            <el-option
+                v-for="area in areas"
+                :key="area.areaId"
+                :label="area.areaName"
+                :value="area.areaId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="学校" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==1">
+          <el-select v-model="releaseParams.id" placeholder="请选择">
+            <el-option
+                v-for="school in schools"
+                :key="school.schoolId"
+                :label="school.schoolName"
+                :value="school.schoolId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="学生个人" prop="id" :label-width="formLabelWidth" v-if="releaseParams.publishType==3">
+          <el-select v-model="releaseParams.id" placeholder="请选择">
+            <el-option
+                v-for="student in students"
+                :key="student.studentsClass.studentId"
+                :label="student.studentName"
+                :value="student.studentsClass.studentId">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="时间" prop="dataTime" :label-width="formLabelWidth">
+          <el-date-picker
+              @change="handleChangeTime"
+              :editable="false"
+              v-model="releaseParams.dataTime"
+              type="datetimerange"
+              range-separator="至"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetForm">重 置</el-button>
+        <el-button @click="releaseFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="releaseSubmit">提 交</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog :close-on-click-modal="false" width="35%" title="添加问卷" :visible.sync="addFormVisible">
+
+      <el-form :model="questionnaires" status-icon :rules="rules" ref="questionnaires">
+        <el-form-item label="问卷名称" prop="questionnaireName" :label-width="formLabelWidth">
+          <el-input v-model="questionnaires.questionnaireName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="问卷简介" prop="questionnaireIntroduction" :label-width="formLabelWidth">
+          <el-input type="textarea" v-model="questionnaires.questionnaireIntroduction" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="resetForm">重 置</el-button>
+        <el-button @click="addFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addQuestionnaireSubmit">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -216,6 +215,7 @@ export default {
 
 
     return {
+      user: null,
       userId: 192386930036805,
       classId: null,
       publishType: 2,
@@ -278,6 +278,9 @@ export default {
     })
     request.get("/selectSchool").then(res => {
       this.schools = res.data
+    })
+    request.get("/getUser").then(res => {
+      this.user = res.data.users
     })
   },
   methods: {

@@ -43,7 +43,7 @@
         style="width: 100%">
       <el-table-column
           label="地区"
-          width="180">
+          width="120">
         <template #default="scope">
           <i class="el-icon-map-location"></i>
           <span style="margin-left: 10px">{{ scope.row.areaName }}</span>
@@ -51,21 +51,21 @@
       </el-table-column>
       <el-table-column
           label="市"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.cityName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="省"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.provinceName }}</span>
         </template>
       </el-table-column>
       <el-table-column
           label="负责人"
-          width="180">
+          width="120">
         <template #default="scope">
           <span>{{ scope.row.userName }}</span>
         </template>

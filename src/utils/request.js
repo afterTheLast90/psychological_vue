@@ -2,10 +2,10 @@ import axios from "axios";
 import {Message} from 'element-ui';
 import VueRouter from "vue-router";
 
-// export const baseUrl = "http://serve.psychological.wmgx.top";
-// export const baseUrlFornt = "http://psychological.wmgx.top"
-export const baseUrl = "http://localhost:8081";
-export const baseUrlFornt = "http://localhost:8080"
+export const baseUrl = "http://serve.psychological.wmgx.top";
+export const baseUrlFornt = "http://psychological.wmgx.top"
+// export const baseUrl = "http://localhost:8081";
+// export const baseUrlFornt = "http://localhost:8080"
 var Axios = axios.create();
 Axios.defaults.baseURL =baseUrl;
 // Axios.defaults.baseURL = "http://localhost:8081";

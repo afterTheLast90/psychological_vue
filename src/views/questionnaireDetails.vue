@@ -49,7 +49,7 @@
                 label="分值"
                 width="190">
               <template #default="scope">
-                <el-input-number v-model="scope.row.optionPoints" :min="1" :max="10" label="描述文字"></el-input-number>
+                <el-input-number v-model="scope.row.optionPoints" :min="-scope.row.optionPoints.length" :max="scope.row.optionPoints.length" label="描述文字"></el-input-number>
               </template>
             </el-table-column>
             <el-table-column
